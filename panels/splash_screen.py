@@ -90,7 +90,7 @@ class Panel(ScreenPanel):
         self.labels['actions'].add(self.labels['power'])
 
     def activate(self):
-        os.system("sync")
+        os.system("sync &")
         #logging.info(f"splash screen .... activate ")
         self.check_power_status()
         self._screen.base_panel.show_macro_shortcut(False)
@@ -113,6 +113,7 @@ class Panel(ScreenPanel):
 
     def restart(self, widget):
         os.system("echo makerbase | sudo -S service klipper restart")
+       # os.system("/home/mks/mainsail/all/git_pull.sh &")
        # self._screen._ws.klippy.restart()
 
 

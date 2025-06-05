@@ -308,9 +308,10 @@ class KlipperScreen(Gtk.Window):
             self.attach_panel(panel_name)
         except Exception as e:
             logging.exception(f"Error attaching panel:\n{e}")
-
+        logging.exception(f"  attaching panel: {self.panels}")
     def attach_panel(self, panel):
        #     self._ws.klippy.gcode_script(f"M600")
+
         self.base_panel.add_content(self.panels[panel])
         logging.debug(f"Current panel hierarchy: {' > '.join(self._cur_panels)}")
         self.base_panel.show_back(len(self._cur_panels) > 1)

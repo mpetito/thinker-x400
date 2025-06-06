@@ -517,7 +517,7 @@ class Panel(ScreenPanel):
         logging.debug("Total: %d GiB" % (total / (2 ** 30)))
         logging.debug("Used: %d GiB" % (used / (2 ** 30)))
         logging.debug("Free: %d MiB" % (free / (2 ** 20)))
-
+        #subprocess.run(["rm /tmp/klippy.log.20*", ""])
         logging.info(f"Starting print---------: {filename}")
        # self.change_dir(None, "/media/usb")
         if filename.find("usb/")==0 or filename.find("usb0/")==0 or filename.find("usb1/")==0 or filename.find("usb2/") == 0:

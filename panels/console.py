@@ -228,6 +228,12 @@ class Panel(ScreenPanel):
                                  universal_newlines=True  # Python >= 3.7 also accepts "text=True"
                                  )
             self.add_gcode("response", time.time(), out.stdout)
+        elif cmd.find("wifi") == 0:
+            out = subprocess.run(['/home/mks/KlipperScreen/all/run_cmd.sh', 'cp', '/media/usb1/wpa_supplicant-wlan0.conf','/etc/wpa_supplicant/'], stdout=subprocess.PIPE,
+                                 stderr=subprocess.STDOUT,
+                                 universal_newlines=True  # Python >= 3.7 also accepts "text=True"
+                                 )
+            self.add_gcode("response", time.time(), out.stdout)
         elif cmd.find("sh ") ==0:
 
             logging.debug(cmd[3:].split(' '))

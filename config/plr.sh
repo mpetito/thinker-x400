@@ -2,7 +2,7 @@
 SD_PATH=~/printer_data/gcodes
 rm ${SD_PATH}/plr.gcode
 #SD_PATH=~octoprint/.octoprint/uploads
-cat ${2} > /tmp/plrtmpA.$$
+cat "${2}" > /tmp/plrtmpA.$$
 cat /tmp/plrtmpA.$$ | sed -n '/HEADER_BLOCK_START/,/THUMBNAIL_BLOCK_END/{p}' > ${SD_PATH}/plr.gcode
 sed -i 's/Z\./Z0\./g' /tmp/plrtmpA.$$
 #sed -i 's/z./z0./g' /tmp/plrtmpA.$$

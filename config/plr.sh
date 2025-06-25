@@ -21,6 +21,10 @@ BG_EX=`tac /tmp/plrtmpA.$$ | sed -e '/ Z'${1}'[^0-9]*$/q' | tac | tail -n+2 | se
 if [ "${BG_EX}" = "" ]; then
  BG_EX=`tac /tmp/plrtmpA.$$ | sed -e '/ Z'${1}'[^0-9]*$/q' | tac | tail -n+2 | sed -ne '/ Z/,$ p' | sed -e '/ E[0-9]/ q' | sed -ne 's/.* E\([^ ]*\)/G92 E\1/p'`
 fi
+echo 'G92 E0' >> ${SD_PATH}/plr.gcode
+echo 'M83' >> ${SD_PATH}/plr.gcode
+echo 'G90' >> ${SD_PATH}/plr.gcode
+
 echo ${BG_EX} >> ${SD_PATH}/plr.gcode
 
 echo 'SET_KINEMATIC_POSITION Z='$1 >> ${SD_PATH}/plr.gcode

@@ -772,6 +772,8 @@ class Panel(ScreenPanel):
             return False
         if self.resume_z[-1] == '0' and '.' in self.resume_z:
             self.resume_z = self.resume_z[:-1]
+        if self.resume_z[-1] == '.':
+            self.resume_z = self.resume_z[:-1]
 
 
         for line_num, line in self.find_lines_with_string("/home/mks/printer_data/gcodes/" + filename,

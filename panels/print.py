@@ -768,6 +768,8 @@ class Panel(ScreenPanel):
 
     def height_check(self, filename):
         logging.debug(f"filename: {filename}")
+        if len(self.resume_z)<=0:
+            return False
         if self.resume_z[-1] == '0' and '.' in self.resume_z:
             self.resume_z = self.resume_z[:-1]
 

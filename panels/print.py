@@ -63,7 +63,7 @@ class Panel(ScreenPanel):
         super().__init__(screen, title)
         self.entry_z = None
         self.gtk = screen.gtk
-        self.distance = 0.1
+        self.distance = 0.05
         sortdir = self._config.get_main_config().get("print_sort_dir", "name_asc")
         sortdir = sortdir.split('_')
         if sortdir[0] not in ["name", "date"] or sortdir[1] not in ["asc", "desc"]:
@@ -559,11 +559,11 @@ class Panel(ScreenPanel):
     def change_distance(self, widget, distance):
         logging.info(f"### Distance {distance}")
         if distance == 5:
-            self.buttonz_01.get_style_context().remove_class("distbutton_active")
+            self.buttonz_05.get_style_context().remove_class("distbutton_active")
             self.buttonz_5.get_style_context().add_class("distbutton_active")
         else:
             self.buttonz_5.get_style_context().remove_class("distbutton_active")
-            self.buttonz_01.get_style_context().add_class("distbutton_active")
+            self.buttonz_05.get_style_context().add_class("distbutton_active")
         self.distance = distance
     def adjust_nozzle(self, widget, up_down):
         logging.info(f"### adjust_nozzle {up_down}{self.distance}")
@@ -693,25 +693,25 @@ class Panel(ScreenPanel):
         self.adjust_z.set_valign(Gtk.Align.CENTER)
         buttonz0 = self._gtk.Button(label=_("Raise Nozzle"), scale=1)
         buttonz1 = self._gtk.Button(label=_("Lower Nozzle"), scale=1)
-        self.buttonz_01 = self._gtk.Button(label="0.1", scale=1)
+        self.buttonz_05 = self._gtk.Button(label="0.05", scale=1)
         self.buttonz_5 = self._gtk.Button(label="5", scale=1)
-        self.buttonz_01.set_direction(Gtk.TextDirection.LTR)
+        self.buttonz_05.set_direction(Gtk.TextDirection.LTR)
         self.buttonz_5.set_direction(Gtk.TextDirection.LTR)
         buttonz0.connect("clicked", self.adjust_nozzle, "")
         buttonz1.connect("clicked", self.adjust_nozzle, "-")
-        self.buttonz_01.connect("clicked", self.change_distance, 0.1)
+        self.buttonz_05.connect("clicked", self.change_distance, 0.05)
         self.buttonz_5.connect("clicked", self.change_distance, 5)
 
-        self.distance = 0.1
+        self.distance = 0.05
         self.buttonz_5.get_style_context().remove_class("distbutton_active")
-        self.buttonz_01.get_style_context().add_class("distbutton_active")
+        self.buttonz_05.get_style_context().add_class("distbutton_active")
 
         #adjust_z.attach(self.labels['entry'], 0, 0, 1, 1)
        # self.adjust_z.attach(label_nozzle, 0, 0, 1, 1)
        # self.adjust_z.attach(label_nozzle, 1, 0, 1, 1)
         self.adjust_z.attach(buttonz0, 0, 0, 1, 1)
         self.adjust_z.attach(buttonz1, 1, 0, 1, 1)
-        self.adjust_z.attach(self.buttonz_01, 0, 1, 1, 1)
+        self.adjust_z.attach(self.buttonz_05, 0, 1, 1, 1)
         self.adjust_z.attach(self.buttonz_5, 1, 1, 1, 1)
 
         self.entry_z = Gtk.Grid()
@@ -758,24 +758,71 @@ class Panel(ScreenPanel):
         dialog.set_title(_("Print"))
         self.hide_numpad(None, None)
 
+    def find_lines_with_string(self,filename, search_string):
+        matches = []
+        with open(filename, 'r') as file:
+            for line_num, line in enumerate(file, 1):
+                if search_string in line:
+                    matches.append((line_num, line.strip()))
+        return matches
+
+    def height_check(self, filename):
+        logging.debug(f"filename: {filename}")
+        if self.resume_z[-1] == '0' and '.' in self.resume_z:
+            self.resume_z = self.resume_z[:-1]
+
+
+        for line_num, line in self.find_lines_with_string("/home/mks/printer_data/gcodes/" + filename,
+                                                          "G1 Z" + self.resume_z):
+            logging.debug(f"行 {line_num}: {line}")
+            return True
+        logging.debug(f"height wrong")
+        return False
     def resume_print(self, widget, filename):
 
-        logging.debug(f"resume_z: {self.resume_z}")
+        logging.debug(f"filename: {filename}")
+        if self.resume_z[-1] == '0' and '.' in  self.resume_z:
+            self.resume_z = self.resume_z[:-1]
+
         file_name = filename.split('/')[-1].replace(" ","%20")
         self._screen._ws.klippy.gcode_script(f"PRINT_CONTINUE Z={self.resume_z} FILE={file_name}")
-        self._screen.show_popup_message(_("Printing"), 1, 8)
+        self._screen.show_popup_message(_("Printing"), 1, 15)
 
-
+    def check_confirm(self, dialog, response_id):
+        self._gtk.remove_dialog(dialog)
+        return
     def confirm_print_response(self, dialog, response_id, filename):
+
+        if response_id == Gtk.ResponseType.YES:
+            if self.height_check(filename):
+                self._gtk.remove_dialog(dialog)
+                self.resume_print(dialog, filename)
+            else:
+                logging.debug(f"height wrong11")
+                buttons = [
+                    {"name": _("OK"), "response": Gtk.ResponseType.CANCEL}
+                ]
+
+                labels = Gtk.Label()
+                labels.set_markup(f"\n\n\n\nThe height value is incorrect!\n")
+                labels.set_hexpand(False)
+                labels.set_halign(Gtk.Align.CENTER)
+                labels.set_vexpand(False)
+                labels.set_valign(Gtk.Align.CENTER)
+                labels.set_line_wrap(True)
+                labels.set_line_wrap_mode(Pango.WrapMode.WORD_CHAR)
+                dialog2 = self._gtk.Dialog(self._screen, buttons, labels, self.check_confirm)
+                dialog2.set_title(_("Print"))
+                #self._screen.show_popup_message("Height wrong!", level=1)
+            return
+
         self._gtk.remove_dialog(dialog)
         if response_id == Gtk.ResponseType.CANCEL:
             return
         if response_id == Gtk.ResponseType.ACCEPT:
             self.resume_print_confirm(dialog, filename)
             return
-        if response_id == Gtk.ResponseType.YES:
-            self.resume_print(dialog, filename)
-            return
+
         total, used, free = shutil.disk_usage("/")
         if free / (2**20) < 200:
             self._screen.show_popup_message("No Space left,please delete some files")

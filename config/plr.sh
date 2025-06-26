@@ -1,4 +1,5 @@
 #!/bin/bash
+echo ${2}
 SD_PATH=~/printer_data/gcodes
 rm ${SD_PATH}/plr.gcode
 #SD_PATH=~octoprint/.octoprint/uploads
@@ -41,6 +42,9 @@ echo 'G1 E2' >> ${SD_PATH}/plr.gcode
 echo 'G1 X350 Y350 F6000' >> ${SD_PATH}/plr.gcode
 echo 'G92 E0' >> ${SD_PATH}/plr.gcode
 echo 'SET_KINEMATIC_POSITION Z='$1 >> ${SD_PATH}/plr.gcode
-# cat /tmp/plrtmpA.$$ | sed -e '1,/Z'${1}'/ d' | sed -ne '/ Z/,$ p' >> ${SD_PATH}/plr.gcode
-tac /tmp/plrtmpA.$$ | sed -e '/ Z'${1}'[^0-9]*$/q' | tac | tail -n+2 | sed -ne '/ Z/,$ p' >> ${SD_PATH}/plr.gcode
+cat /tmp/plrtmpA.$$ | sed -e '1,/Z'${1}'/ d' | sed -ne '/ Z/,$ p' >> ${SD_PATH}/plr.gcode
+#tac /tmp/plrtmpA.$$ | sed -e '/ Z'${1}'[^0-9]*$/q' | tac | tail -n+2 | sed -ne '/ Z/,$ p' >> ${SD_PATH}/plr.gcode
+if [ $(stat -c %s ${SD_PATH}/plr.gcode) -gt 1024 ]; then
+  echo ">lk"
+fi
 rm /tmp/plrtmpA.$$

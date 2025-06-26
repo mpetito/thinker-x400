@@ -773,8 +773,12 @@ class Panel(ScreenPanel):
 
 
         for line_num, line in self.find_lines_with_string("/home/mks/printer_data/gcodes/" + filename,
-                                                          "G1 Z" + self.resume_z):
-            logging.debug(f"行 {line_num}: {line}")
+                                                          "G1 Z" + self.resume_z+"\n"):
+            logging.debug(f"line: {line_num}: {line}")
+            return True
+        for line_num, line in self.find_lines_with_string("/home/mks/printer_data/gcodes/" + filename,
+                                                          "G1 Z" + self.resume_z + " "):
+            logging.debug(f"line : {line_num}: {line}")
             return True
         logging.debug(f"height wrong")
         return False

@@ -775,17 +775,39 @@ class Panel(ScreenPanel):
         if self.resume_z[-1] == '.':
             self.resume_z = self.resume_z[:-1]
 
-
+        check_flag = False
         for line_num, line in self.find_lines_with_string("/home/mks/printer_data/gcodes/" + filename,
                                                           "G1 Z" + self.resume_z+"\n"):
             logging.debug(f"line: {line_num}: {line}")
-            return True
+            check_flag = True
+            break
         for line_num, line in self.find_lines_with_string("/home/mks/printer_data/gcodes/" + filename,
                                                           "G1 Z" + self.resume_z + " "):
             logging.debug(f"line : {line_num}: {line}")
-            return True
+            check_flag = True
+            break
+        buttons = [
+            {"name": _("OK"), "response": Gtk.ResponseType.CANCEL}
+        ]
+        if check_flag is False:
+            line = ""
+            for line_num, line in self.find_lines_with_string("/home/mks/printer_data/gcodes/" + filename,
+                                                              "G1 Z" + self.resume_z ):
+                logging.debug(f"line: {line_num}: {line}")
+                break
+            labels = Gtk.Label()
+            labels.set_markup(f"\n\n\n\nThe height value is incorrect!\n\n Please Try:   {line.split('Z')[1]} mm")
+            labels.set_hexpand(False)
+            labels.set_halign(Gtk.Align.CENTER)
+            labels.set_vexpand(False)
+            labels.set_valign(Gtk.Align.CENTER)
+            labels.set_line_wrap(True)
+            labels.set_line_wrap_mode(Pango.WrapMode.WORD_CHAR)
+            dialog2 = self._gtk.Dialog(self._screen, buttons, labels, self.check_confirm)
+            dialog2.set_title(_("Print"))
+
         logging.debug(f"height wrong")
-        return False
+        return check_flag
     def resume_print(self, widget, filename):
 
         logging.debug(f"filename: {filename}")
@@ -807,20 +829,7 @@ class Panel(ScreenPanel):
                 self.resume_print(dialog, filename)
             else:
                 logging.debug(f"height wrong11")
-                buttons = [
-                    {"name": _("OK"), "response": Gtk.ResponseType.CANCEL}
-                ]
 
-                labels = Gtk.Label()
-                labels.set_markup(f"\n\n\n\nThe height value is incorrect!\n")
-                labels.set_hexpand(False)
-                labels.set_halign(Gtk.Align.CENTER)
-                labels.set_vexpand(False)
-                labels.set_valign(Gtk.Align.CENTER)
-                labels.set_line_wrap(True)
-                labels.set_line_wrap_mode(Pango.WrapMode.WORD_CHAR)
-                dialog2 = self._gtk.Dialog(self._screen, buttons, labels, self.check_confirm)
-                dialog2.set_title(_("Print"))
                 #self._screen.show_popup_message("Height wrong!", level=1)
             return
 

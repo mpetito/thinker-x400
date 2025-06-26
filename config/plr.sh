@@ -49,3 +49,5 @@ if [ $(stat -c %s ${SD_PATH}/plr.gcode) -gt 1024 ]; then
   echo ">lk"
 fi
 rm /tmp/plrtmpA.$$
+sync
+curl -X POST http://127.0.0.1/printer/gcode/script?script=SDCARD_PRINT_FILE%20FILENAME=plr.gcode

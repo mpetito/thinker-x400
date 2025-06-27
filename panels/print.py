@@ -796,7 +796,11 @@ class Panel(ScreenPanel):
                 logging.debug(f"line: {line_num}: {line}")
                 break
             labels = Gtk.Label()
-            labels.set_markup(f"\n\n\n\nThe height value is incorrect!\n\n Please Try:   {line.split('Z')[1]} mm")
+            if len(line) > 1:
+                labels.set_markup(f"\n\n\n\nThe height value is incorrect!\n\n Please Try:   {line.split('Z')[1]} mm")
+            else:
+                labels.set_markup(f"\n\n\n\nThe height value is incorrect!\n\n Please Try:   {round(float(self.resume_z)-0.1,1)} or {round(float(self.resume_z)+0.1,1)}  mm")
+
             labels.set_hexpand(False)
             labels.set_halign(Gtk.Align.CENTER)
             labels.set_vexpand(False)

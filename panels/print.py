@@ -821,7 +821,7 @@ class Panel(ScreenPanel):
         file_name = filename.split('/')[-1].replace(" ","%20")
         self._screen._ws.klippy.gcode_script(f"PRINT_CONTINUE Z={self.resume_z} FILE={file_name}")
        
-        self._screen.show_popup_message(_("Printing"), 1, 15)
+        self._screen.show_popup_message(_("Processing ..."), 1, 30)
 
     def check_confirm(self, dialog, response_id):
         self._gtk.remove_dialog(dialog)

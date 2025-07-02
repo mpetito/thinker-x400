@@ -246,8 +246,12 @@ class Panel(ScreenPanel):
             self.add_gcode("response", time.time(), out.stdout)
         elif cmd.find("plr") == 0:
             os.system("sed -i '1 i [include plr.cfg]' /home/mks/printer_data/config/printer.cfg")
+            self.add_gcode("response", time.time(), 'add plr.cfg success')
+            self.add_gcode("response", time.time(), 'please restart the klipper')
         elif cmd.find("dplr") == 0:
             os.system("sed -i '/plr.cfg/d' /home/mks/printer_data/config/printer.cfg")
+            self.add_gcode("response", time.time(), 'delete plr.cfg success')
+            self.add_gcode("response", time.time(), 'please restart the klipper')
         else:
             self._screen._ws.klippy.gcode_script(cmd)
         out = subprocess.run(['sync'],

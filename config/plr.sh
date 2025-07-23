@@ -5,7 +5,7 @@ echo ${2}
 #z_s=$(echo ${1})
 #z_p=${1} #$("${1}" | sed 's/\./\\./g')
 echo -n > /tmp/plr.gcode # clear the file
-
+echo -n > /tmp/pose
 
 echo "date0: $(date +"%Y-%m-%d %H:%M:%S")"
 #echo 'START_TEMPS' >> /tmp/plr.gcode

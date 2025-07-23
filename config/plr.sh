@@ -32,7 +32,7 @@ echo 'G1 Z4' >> /tmp/plr.gcode
 echo 'G90' >> /tmp/plr.gcode
 echo 'G28 X Y' >> /tmp/plr.gcode
 echo 'G91' >> /tmp/plr.gcode
-echo 'G1 Z-4.08' >> /tmp/plr.gcode
+echo 'G1 Z-4.03' >> /tmp/plr.gcode
 echo 'G90' >> /tmp/plr.gcode
 echo 'M83' >> /tmp/plr.gcode
 echo 'G92 E0' >> /tmp/plr.gcode

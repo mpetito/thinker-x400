@@ -173,6 +173,7 @@ class VirtualSD:
         flist = [f[0] for f in files]
         files_by_lower = { fname.lower(): fname for fname, fsize in files }
         fname = filename
+        gcmd.respond_raw("self.filename:%s" % filename)
         try:
             if fname not in flist:
                 fname = files_by_lower[fname.lower()]
@@ -188,6 +189,18 @@ class VirtualSD:
         gcmd.respond_raw("File selected")
         self.current_file = f
         self.file_position = 0
+        z_str = gcmd.get('Z', None)
+        if z_str:
+            with open("/tmp/pose", 'r', encoding='utf-8') as file:
+                for line_number, line in enumerate(file, 1):
+                    self.file_position = int(line)
+                    gcmd.respond_raw("self.file_position:%d" % self.file_position)
+                    break
+
+                                 
+                                 
+        gcmd.respond_raw("self.file_position:%d" % self.file_position)
+        #self.file_position = 0
         self.file_size = fsize
         pause_resume = self.printer.lookup_object('pause_resume')
         if pause_resume.is_paused:
@@ -218,6 +231,13 @@ class VirtualSD:
         self.next_file_position = pos
     def is_cmd_from_sd(self):
         return self.cmd_from_sd
+
+
+    def run_plr(self):
+        self.gcode.respond_raw("run_plr")
+        with open("/tmp/plr.gcode", 'r', encoding='utf-8') as file:
+            for line_number, line in enumerate(file, 1):
+                self.gcode.run_script_from_command(line)
     # Background work timer
     def work_handler(self, eventtime):
         logging.info("Starting SD card print (position %d)", self.file_position)
@@ -233,6 +253,9 @@ class VirtualSD:
         partial_input = ""
         lines = []
         error_message = None
+        if self.file_position>0:
+            self.run_plr()
+
         while not self.must_pause_work:
             if not lines:
                 # Read more data

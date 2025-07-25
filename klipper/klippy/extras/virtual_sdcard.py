@@ -10,6 +10,7 @@ VALID_GCODE_EXTS = ['gcode', 'g', 'gco']
 class VirtualSD:
     def __init__(self, config):
         self.printer = config.get_printer()
+        self.z_str = None
         self.printer.register_event_handler("klippy:shutdown",
                                             self.handle_shutdown)
         # sdcard state
@@ -189,8 +190,8 @@ class VirtualSD:
         gcmd.respond_raw("File selected")
         self.current_file = f
         self.file_position = 0
-        z_str = gcmd.get('Z', None)
-        if z_str:
+        self.z_str = gcmd.get('Z', None)
+        if self.z_str:
             with open("/tmp/pose", 'r', encoding='utf-8') as file:
                 for line_number, line in enumerate(file, 1):
                     self.file_position = int(line)
@@ -253,7 +254,7 @@ class VirtualSD:
         partial_input = ""
         lines = []
         error_message = None
-        if self.file_position>0:
+        if self.file_position>0 and self.z_str:
             self.run_plr()
 
         while not self.must_pause_work:

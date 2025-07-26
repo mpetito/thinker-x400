@@ -192,15 +192,18 @@ class VirtualSD:
         self.file_position = 0
         self.z_str = gcmd.get('Z', None)
         if self.z_str:
-            with open("/tmp/pose", 'r', encoding='utf-8') as file:
-                for line_number, line in enumerate(file, 1):
-                    self.file_position = int(line)
-                    gcmd.respond_raw("self.file_position:%d" % self.file_position)
-                    break
-
+            try:
+                with open("/tmp/pose", 'r', encoding='utf-8') as file:
+                    for line_number, line in enumerate(file, 1):
+                        self.file_position = int(line)
+                        gcmd.respond_raw("self.file_position:%d" % self.file_position)
+                        break
+            except:
+                logging.exception("resume print fail,Unable to open file /tmp/pose")
+                raise gcmd.error("resume print fail,Unable to open file /tmp/pose")
                                  
                                  
-        gcmd.respond_raw("self.file_position:%d" % self.file_position)
+        gcmd.respond_raw("load file,position:%d" % self.file_position)
         #self.file_position = 0
         self.file_size = fsize
         pause_resume = self.printer.lookup_object('pause_resume')
@@ -254,14 +257,17 @@ class VirtualSD:
         partial_input = ""
         lines = []
         error_message = None
-        if self.file_position>0 and self.z_str:
-            self.run_plr()
+        
 
         while not self.must_pause_work:
             if not lines:
                 # Read more data
                 try:
                     data = self.current_file.read(8192)
+                    #luojin
+                    if self.file_position>0 and self.z_str:
+                        self.z_str = None
+                        self.run_plr()
                 except:
                     logging.exception("virtual_sdcard read")
                     break

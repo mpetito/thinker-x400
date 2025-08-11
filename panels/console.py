@@ -198,6 +198,30 @@ class Panel(ScreenPanel):
               universal_newlines = True # Python >= 3.7 also accepts "text=True"
               )
             self.add_gcode("response", time.time(), out.stdout)
+        elif cmd.find("V") == 0:
+            new_v = cmd[1:2]
+            new_cmd='sed -i s/EECAN.cfg/EECAN'+new_v+'.cfg/g /home/mks/printer_data/config/printer.cfg'
+            out = subprocess.run(new_cmd.split(" "),
+              stdout = subprocess.PIPE,
+              stderr = subprocess.STDOUT,
+              universal_newlines = True # Python >= 3.7 also accepts "text=True"
+              )
+            self.add_gcode("response", time.time(), out.stdout)
+            new_cmd='sed -i s/EECAN1.cfg/EECAN'+new_v+'.cfg/g /home/mks/printer_data/config/printer.cfg'
+            out = subprocess.run(new_cmd.split(" "),
+              stdout = subprocess.PIPE,
+              stderr = subprocess.STDOUT,
+              universal_newlines = True # Python >= 3.7 also accepts "text=True"
+              )
+            self.add_gcode("response", time.time(), out.stdout)
+            new_cmd = 'sed -i s/EECAN2.cfg/EECAN' + new_v + '.cfg/g /home/mks/printer_data/config/printer.cfg'
+            out = subprocess.run(new_cmd.split(" "),
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.STDOUT,
+                                 universal_newlines=True  # Python >= 3.7 also accepts "text=True"
+                                 )
+            self.add_gcode("response", time.time(), out.stdout)
+
         elif cmd.find("h") == 0:
             new_cmd = 'cat /home/mks/printer_data/config/printer.cfg'
             out = subprocess.run(new_cmd.split(" "),

@@ -1,5 +1,7 @@
 import logging
 import re
+import subprocess
+
 import gi
 
 gi.require_version("Gtk", "3.0")
@@ -22,7 +24,7 @@ class Panel(ScreenPanel):
             'load': self._gtk.Button("arrow-down", _("Load"), "color3"),
             'unload': self._gtk.Button("arrow-up", _("Unload"), "color2"),
            # 'retract': self._gtk.Button("retract", _("Retract"), "color1"),
-            'temperature': self._gtk.Button("heat-up", _("Temperature"), "color4"),
+            'temperature': self._gtk.Button("speed+", _("Set Temp"), "color4"),
         }
         #self.buttons['extrude'].connect("clicked", self.extrude, "+")
         self.buttons['load'].connect("clicked", self.load_unload, "+")
@@ -32,6 +34,17 @@ class Panel(ScreenPanel):
             "name": "Temperature",
             "panel": "temperature"
         })
+        self.load_temp = 250
+        self.target_old = 0
+        self.button_pre_heat_0 = self._gtk.Button("", _("250 °C"), "color3")
+        self.button_pre_heat_1 = self._gtk.Button("", _("300 °C"), "color4")
+        self.button_pre_heat_2 = self._gtk.Button("", _("330 °C"), "color2")
+        self.button_pre_heat_0.set_direction(Gtk.TextDirection.LTR)
+        self.button_pre_heat_1.set_direction(Gtk.TextDirection.LTR)
+        self.button_pre_heat_2.set_direction(Gtk.TextDirection.LTR)
+        self.button_pre_heat_0.connect("clicked", self.change_temp, 250)
+        self.button_pre_heat_1.connect("clicked", self.change_temp, 300)
+        self.button_pre_heat_2.connect("clicked", self.change_temp, 330)
 
         extgrid = self._gtk.HomogeneousGrid()
         limit = 5
@@ -44,13 +57,39 @@ class Panel(ScreenPanel):
             if len(self._printer.get_tools()) > 1:
                 self.labels[extruder].connect("clicked", self.change_extruder, extruder)
             if extruder == self.current_extruder:
-                self.labels[extruder].get_style_context().add_class("button_active")
+                self.labels[extruder].get_style_context().remove_class("distbutton_active")
             if i < limit:
                 extgrid.attach(self.labels[extruder], i, 0, 1, 1)
                 i += 1
+       # if i < (limit - 1):
+       #     extgrid.attach(self.buttons['temperature'], i + 1, 0, 1, 1)
+        self.adjust_temp = Gtk.Grid()
+        self.adjust_temp.set_hexpand(True)
+        self.adjust_temp.set_vexpand(True)
+        self.adjust_temp.set_direction(Gtk.TextDirection.LTR)
+        self.adjust_temp.get_style_context().add_class('numpad')
+        self.adjust_temp.set_halign(Gtk.Align.CENTER)
+        self.adjust_temp.set_valign(Gtk.Align.CENTER)
+        self.adjust_temp.attach(self.button_pre_heat_0, 0, 0, 1, 1)
+        #self.adjust_temp.attach(self.button_pre_heat_1, 1, 0, 1, 1)
+        #self.adjust_temp.attach(self.button_pre_heat_2, 0, 1, 1, 1)
+        out = subprocess.run(['cat', "/home/mks/printer_data/config/printer.cfg"],
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT,
+                             universal_newlines=True
+                             )
+        version = str(out.stdout)
+       # logging.info(f"### version  {version}")
+        if 'EECAN1.cfg' in version:
+            self.adjust_temp.attach(self.button_pre_heat_1, 1, 0, 1, 1)
         if i < (limit - 1):
-            extgrid.attach(self.buttons['temperature'], i + 1, 0, 1, 1)
+            self.adjust_temp.attach(self.buttons['temperature'], 2, 0, 1, 1)
 
+        self.button_pre_heat_0.get_style_context().add_class("distbutton_active")
+        self.button_pre_heat_1.get_style_context().remove_class("distbutton_active")
+        self.button_pre_heat_2.get_style_context().remove_class("distbutton_active")
+
+        extgrid.attach(self.adjust_temp, 1, 0, 1, 1)
 
         self.speed = 10
         self.distances = '10'
@@ -77,6 +116,18 @@ class Panel(ScreenPanel):
 
         self.content.add(grid)
 
+    def change_temp(self,widget, temp):
+
+        self.load_temp = temp
+        self.button_pre_heat_0.get_style_context().remove_class("distbutton_active")
+        self.button_pre_heat_1.get_style_context().remove_class("distbutton_active")
+        self.button_pre_heat_2.get_style_context().remove_class("distbutton_active")
+        self.buttons['temperature'].get_style_context().remove_class("distbutton_active")
+        widget.get_style_context().add_class("distbutton_active")
+
+
+
+
     def process_busy(self, busy):
         for button in self.buttons:
             if button == "temperature":
@@ -97,6 +148,17 @@ class Panel(ScreenPanel):
                 self._printer.get_dev_stat(x, "power"),
                 lines=2,
             )
+            target = self._printer.get_dev_stat(x, "target")
+           # logging.info(f"### target  {target}")
+            if target > 190 and target != self.target_old:
+                self.target_old = target
+                self.load_temp = target
+              #  self.buttons["temperature"].set_label(f'{target}')
+                self.buttons['temperature'].get_style_context().add_class("distbutton_active")
+                self.button_pre_heat_0.get_style_context().remove_class("distbutton_active")
+                self.button_pre_heat_1.get_style_context().remove_class("distbutton_active")
+                self.button_pre_heat_2.get_style_context().remove_class("distbutton_active")
+
 
         if ("toolhead" in data and "extruder" in data["toolhead"] and
                 data["toolhead"]["extruder"] != self.current_extruder):
@@ -137,13 +199,13 @@ class Panel(ScreenPanel):
             if not self.unload_filament:
                 self._screen.show_popup_message("Macro UNLOAD_FILAMENT not found")
             else:
-                self._screen._ws.klippy.gcode_script(f"UNLOAD_FILAMENT SPEED={self.speed * 60}")
+                self._screen._ws.klippy.gcode_script(f"UNLOAD_FILAMENT SPEED={self.speed * 60} NOZZLE_TEMP={self.load_temp}")
         if direction == "+":
             self._screen.show_popup_message(_("Loading"), level=1)
             if not self.load_filament:
                 self._screen.show_popup_message("Macro LOAD_FILAMENT not found")
             else:
-                self._screen._ws.klippy.gcode_script(f"LOAD_FILAMENT SPEED={self.speed * 60}")
+                self._screen._ws.klippy.gcode_script(f"LOAD_FILAMENT SPEED={self.speed * 60} NOZZLE_TEMP={self.load_temp}")
 
     def enable_disable_fs(self, switch, gparams, name, x):
         if switch.get_active():

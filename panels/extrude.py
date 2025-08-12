@@ -24,7 +24,7 @@ class Panel(ScreenPanel):
             'load': self._gtk.Button("arrow-down", _("Load"), "color3"),
             'unload': self._gtk.Button("arrow-up", _("Unload"), "color2"),
            # 'retract': self._gtk.Button("retract", _("Retract"), "color1"),
-            'temperature': self._gtk.Button("speed+", _("Set Temp"), "color4"),
+            'temperature': self._gtk.Button("heat-up", _("Set Temp"), ""),
         }
         #self.buttons['extrude'].connect("clicked", self.extrude, "+")
         self.buttons['load'].connect("clicked", self.load_unload, "+")
@@ -36,9 +36,9 @@ class Panel(ScreenPanel):
         })
         self.load_temp = 250
         self.target_old = 0
-        self.button_pre_heat_0 = self._gtk.Button("", _("250 °C"), "color3")
-        self.button_pre_heat_1 = self._gtk.Button("", _("300 °C"), "color4")
-        self.button_pre_heat_2 = self._gtk.Button("", _("330 °C"), "color2")
+        self.button_pre_heat_0 = self._gtk.Button("clock", _("250 °C"), "")
+        self.button_pre_heat_1 = self._gtk.Button("clock", _("300 °C"), "")
+        self.button_pre_heat_2 = self._gtk.Button("clock", _("330 °C"), "")
         self.button_pre_heat_0.set_direction(Gtk.TextDirection.LTR)
         self.button_pre_heat_1.set_direction(Gtk.TextDirection.LTR)
         self.button_pre_heat_2.set_direction(Gtk.TextDirection.LTR)

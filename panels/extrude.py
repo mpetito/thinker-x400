@@ -36,8 +36,8 @@ class Panel(ScreenPanel):
         })
         self.load_temp = 250
         self.target_old = 0
-        self.button_pre_heat_0 = self._gtk.Button("clock", _("250 °C"), "")
-        self.button_pre_heat_1 = self._gtk.Button("clock", _("300 °C"), "")
+        self.button_pre_heat_0 = self._gtk.Button("speed-", _("250 °C"), "")
+        self.button_pre_heat_1 = self._gtk.Button("speed+", _("300 °C"), "")
         self.button_pre_heat_2 = self._gtk.Button("clock", _("330 °C"), "")
         self.button_pre_heat_0.set_direction(Gtk.TextDirection.LTR)
         self.button_pre_heat_1.set_direction(Gtk.TextDirection.LTR)

@@ -38,8 +38,19 @@ echo 'G1 Z-4.03' >> /tmp/plr.gcode
 echo 'G90' >> /tmp/plr.gcode
 echo 'M83' >> /tmp/plr.gcode
 echo 'G92 E0' >> /tmp/plr.gcode
-echo 'G1 E2' >> /tmp/plr.gcode
-echo 'G1 X350 Y350 F6000' >> /tmp/plr.gcode
+echo 'G1 X395 Y50 E3.7 F12000' >> /tmp/plr.gcode
+echo 'G1 X395 Y130 E3.7 ' >> /tmp/plr.gcode
+echo 'G1 X395 Y50 E3.7 ' >> /tmp/plr.gcode
+echo 'G1 X395 Y130 E3.7 ' >> /tmp/plr.gcode
+echo 'G1 X395 Y50 E3.7 ' >> /tmp/plr.gcode      
+echo 'G1 X395 Y130 E3.7 ' >> /tmp/plr.gcode 
+echo 'G1 X395 Y50 E3.7 ' >> /tmp/plr.gcode      
+echo 'G1 X395 Y130 E3.7 ' >> /tmp/plr.gcode 
+echo 'G1 X395 Y50 E3.7 ' >> /tmp/plr.gcode      
+echo 'G1 X395 Y130 E3.7 ' >> /tmp/plr.gcode 
+echo 'G1 X395 Y50 E3.7 ' >> /tmp/plr.gcode      
+echo 'G1 X395 Y130 E3.7 ' >> /tmp/plr.gcode 
+
 echo 'G92 E0' >> /tmp/plr.gcode
 echo 'M106 S250' >> /tmp/plr.gcode
 echo 'SET_KINEMATIC_POSITION Z='$1 >> /tmp/plr.gcode

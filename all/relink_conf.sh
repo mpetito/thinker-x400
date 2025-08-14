@@ -18,6 +18,10 @@ sed   -i '/^.*x400_p.cfg.*$/,/^.*SAVE_CONFIG.*$/{/^.*x400_p.cfg.*$/!{/^.*SAVE_CO
 sed -i 's/#\[include KAMP_Settings.cfg\]/[include KAMP_Settings.cfg]/g' /home/mks/printer_data/config/printer.cfg
 sed -i 's/ERYONE_EBB36.cfg/ERYONE_36.cfg/g' /home/mks/printer_data/config/printer.cfg
 
+chmod 777 /home/mks/KlipperScreen/* -Rf
+chmod 777 /home/mks/KlipperScreen/all/*
+chmod 777 /home/mks/printer_data/config/*
+
 rm /home/mks/klipper -rf
 rm /home/mks/mainsail/all -rf
 rm /home/mks/printer_data/config/runout.cfg
@@ -69,9 +73,7 @@ cp  /home/mks/KlipperScreen/config/chamber.cfg  /home/mks/printer_data/config
 rm  /home/mks/printer_data/logs -rf
 ln -s /tmp /home/mks/printer_data/logs
 
-chmod 777 /home/mks/KlipperScreen/* -Rf
-chmod 777 /home/mks/KlipperScreen/all/*
-chmod 777 /home/mks/printer_data/config/*
+
 
 echo makerbase | sudo -S cp /home/mks/KlipperScreen/all/rc.local /etc/rc.local
 

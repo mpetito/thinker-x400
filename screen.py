@@ -829,9 +829,9 @@ class KlipperScreen(Gtk.Window):
         except Exception as e:
             pass
         if "main_menu" in self._cur_panels:
-            self.show_title_IP +=  " | Farm: eryone.club"
+            return  self.show_title_IP
         #logging.info(f"#### _cur_panels {self._cur_panels},{len(self._cur_panels)}")
-        return self.show_title_IP
+        return self.show_title_IP + " | Farm: eryone.club"
     def state_printing(self):
         self.close_screensaver()
        # if "extrude" in self._cur_panels or "chgfilament" in self._cur_panels:
@@ -853,7 +853,7 @@ class KlipperScreen(Gtk.Window):
         self.base_panel_show_all()
         #subprocess.run(["sync", ""])
         #os.system("sync")
-        #logging.debug("state_ready sync ")
+        logging.debug("state_ready========== ")
 
     def state_startup(self):
         self.printer_initializing(_("Klipper is attempting to start"))
@@ -890,8 +890,13 @@ class KlipperScreen(Gtk.Window):
         self.ip_id = self.show_title_IP
         self.update_ip_id()
         if self.ip_id != self.show_title_IP:
+            logging.debug("self.ip_id %s ======= %s", self.ip_id, self.show_title_IP)
             if "calibrate" not in self._cur_panels:
                 self.reload_panels()
+                if self.popup_timeout is not None:
+                    self.close_popup_message()
+                    #GLib.source_remove(self.popup_timeout)
+                    #self.popup_timeout = None
            # if "job_status" not in self._cur_panels and "192.168" in self.show_title_IP:
            #     os.system("echo makerbase | sudo -S systemctl restart crowsnest.service")
             self.ip_id = self.show_title_IP

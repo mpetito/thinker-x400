@@ -1,3 +1,4 @@
+import configparser
 import logging,re
 import gi
 import subprocess
@@ -167,21 +168,23 @@ class Panel(MenuPanel):
             pass
         #logging.debug(f"filename==0...")
         # power losse recover
-        matchPattern = re.compile(r'filename = ')
-        try:
-            file = open('/home/mks/printer_data/config/variable.cfg', 'r')
-            while 1:
-                line = file.readline()
-                if not line:
-                    logging.debug(f"read file error")
-                    break
-                elif matchPattern.search(line):
-                    logging.debug(f"filename==1...")
-                    pattern = r'\'(.*?)\''
-                    extracted_string = re.findall(pattern, line)
-                    if len(extracted_string[0]) < 5:
-                        break
-                    label = Gtk.Label("Resume print file: \n \n\n%s ?" % extracted_string[0])
+        config = configparser.ConfigParser()
+        config.read('/home/mks/printer_data/config/variable.cfg')
+        logging.debug(f"All sections:{config['Variables']}")
+
+        if 'Variables' in config:
+            power_resume_z = config.get('Variables', 'power_resume_z', fallback=None)
+            if power_resume_z is not None:
+                power_resume_z = config['Variables']['power_resume_z']
+              #  self.resume_z = power_resume_z
+               # self.labels['entry'].set_text(f"{power_resume_z}")
+                logging.debug(f"power_resume_z:{power_resume_z}")
+
+            filename = config.get('Variables', 'filename', fallback=None)
+            if filename is not None:
+                if '.gcode' in filename:
+                    label = Gtk.Label(
+                        "Resume Print ? \n\nFile: %s  \n\n Height: %s mm" % (filename, power_resume_z))
                     buttons = [
                         {"name": _("Print"), "response": Gtk.ResponseType.OK},
                         {"name": _("Cancel"), "response": Gtk.ResponseType.CANCEL}
@@ -195,10 +198,8 @@ class Panel(MenuPanel):
                     scroll.add(vbox)
                     self.dialog_wait = self._gtk.Dialog(self._screen, buttons, scroll, self.wait_confirm, "title")
                     self.dialog_wait.set_title(_("Update"))
-                    break
-            file.close()
-        except Exception as e:
-            pass
+
+
 
 
 

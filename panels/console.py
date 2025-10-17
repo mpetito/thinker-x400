@@ -199,29 +199,44 @@ class Panel(ScreenPanel):
               )
             self.add_gcode("response", time.time(), out.stdout)
         elif cmd.find("V") == 0:
-            new_v = cmd[1:2]
-            new_cmd='sed -i s/EECAN.cfg/EECAN'+new_v+'.cfg/g /home/mks/printer_data/config/printer.cfg'
-            out = subprocess.run(new_cmd.split(" "),
-              stdout = subprocess.PIPE,
-              stderr = subprocess.STDOUT,
-              universal_newlines = True # Python >= 3.7 also accepts "text=True"
-              )
-            self.add_gcode("response", time.time(), out.stdout)
-            new_cmd='sed -i s/EECAN1.cfg/EECAN'+new_v+'.cfg/g /home/mks/printer_data/config/printer.cfg'
-            out = subprocess.run(new_cmd.split(" "),
-              stdout = subprocess.PIPE,
-              stderr = subprocess.STDOUT,
-              universal_newlines = True # Python >= 3.7 also accepts "text=True"
-              )
-            self.add_gcode("response", time.time(), out.stdout)
-            new_cmd = 'sed -i s/EECAN2.cfg/EECAN' + new_v + '.cfg/g /home/mks/printer_data/config/printer.cfg'
-            out = subprocess.run(new_cmd.split(" "),
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.STDOUT,
-                                 universal_newlines=True  # Python >= 3.7 also accepts "text=True"
-                                 )
-            self.add_gcode("response", time.time(), out.stdout)
+            param = cmd[1:].strip()
 
+            target_cfg = "" 
+            response_msg = "" 
+
+            if param == "1_350":
+                target_cfg = "EECAN1.cfg"
+                response_msg = "Current configuration set for 350.\n Please restart Klipper." 
+            elif param == "1_300":
+                target_cfg = "EECAN.cfg"
+                response_msg = "Current configuration set for 300.\n Please restart Klipper" 
+            elif param.isdigit():
+                target_cfg = f"EECAN{param}.cfg"
+                response_msg = f"Current configuration set for version {param}." 
+            elif param == "":
+                self.add_gcode("response", time.time(), "V command requires a parameter (e.g., V1, V1_300, V1_350)")
+                return
+            else:
+                self.add_gcode("response", time.time(), f"Invalid V parameter: {param}")
+                return
+
+            if response_msg:
+                self.add_gcode("response", time.time(), response_msg)
+
+            old_cfgs = ["EECAN.cfg", "EECAN1.cfg", "EECAN2.cfg"]
+
+            for old_cfg in old_cfgs:
+                if old_cfg != target_cfg:
+
+                    new_cmd = f"sed -i s/{old_cfg}/{target_cfg}/g /home/mks/printer_data/config/printer.cfg"
+                    
+                    out = subprocess.run(new_cmd.split(" "),
+                                         stdout=subprocess.PIPE, 
+                                         stderr=subprocess.STDOUT, 
+                                         universal_newlines=True  
+                                         )
+                    self.add_gcode("response", time.time(), out.stdout)
+                
         elif cmd.find("h") == 0:
             new_cmd = 'cat /home/mks/printer_data/config/printer.cfg'
             out = subprocess.run(new_cmd.split(" "),

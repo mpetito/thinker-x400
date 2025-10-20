@@ -485,7 +485,7 @@ class BedMeshCalibrate:
             max_x = max_y = self.radius
         else:
             # rectangular
-            x_cnt, y_cnt = parse_config_pair(config, 'probe_count', 3, minval=3)
+            x_cnt, y_cnt = parse_config_pair(config, 'probe_count', 2, minval=2)
             min_x, min_y = config.getfloatlist('mesh_min', count=2)
             max_x, max_y = config.getfloatlist('mesh_max', count=2)
             if max_x <= min_x or max_y <= min_y:
@@ -716,7 +716,7 @@ class BedMeshCalibrate:
                 self.mesh_max = parse_gcmd_coord(gcmd, 'MESH_MAX')
                 need_cfg_update = True
             if "PROBE_COUNT" in params:
-                x_cnt, y_cnt = parse_gcmd_pair(gcmd, 'PROBE_COUNT', minval=3)
+                x_cnt, y_cnt = parse_gcmd_pair(gcmd, 'PROBE_COUNT', minval=2)
                 self.mesh_config['x_count'] = x_cnt
                 self.mesh_config['y_count'] = y_cnt
                 need_cfg_update = True

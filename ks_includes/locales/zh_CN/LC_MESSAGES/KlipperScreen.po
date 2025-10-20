@@ -93,6 +93,48 @@ msgstr "热床调平"
 msgid "Bed Mesh"
 msgstr "床网"
 
+msgid "Grid"
+msgstr "网格"
+
+msgid "Select Bed Mesh Grid Size"
+msgstr "选择热床网格大小"
+
+msgid "Probe count in EECAN.cfg set to"
+msgstr "在 EECAN.cfg 文件中的探针（或探测）点数设置为"
+
+msgid "Probe count in EECAN1.cfg set to"
+msgstr "在 EECAN1.cfg 文件中的探针（或探测）点数设置为"
+
+msgid "A Klipper firmware restart is required."
+msgstr "需要重启 Klipper 固件。"
+
+msgid "2x2 Grid"
+msgstr "2x2 网格"
+
+msgid "3x3 Grid"
+msgstr "3x3 网格"
+
+msgid "4x4 Grid"
+msgstr "4x4 网格"
+
+msgid "5x5 Grid"
+msgstr "5x5 网格"
+
+msgid "6x6 Grid"
+msgstr "6x6 网格"
+
+msgid "7x7 Grid"
+msgstr "7x7 网格"
+
+msgid "8x8 Grid"
+msgstr "8x8 网格"
+
+msgid "9x9 Grid"
+msgstr "9x9 网格"
+
+msgid "10x10 Grid"
+msgstr "10x10 网格"
+
 msgid "Bed screw configuration:"
 msgstr "热床螺丝配置："
 

@@ -4,7 +4,7 @@ import os
 import subprocess
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
+from gi.repository import Gtk, Pango
 from ks_includes.screen_panel import ScreenPanel
 
 logging.getLogger(__name__).setLevel(logging.INFO)
@@ -20,22 +20,20 @@ class Panel(ScreenPanel):
         GRID_COLUMNS = 3
         BUTTON_SPACING = 25
         
-        title_label = self._gtk.Label(_("Select Bed Mesh Grid Size"), "title")
-        title_label.set_halign(Gtk.Align.CENTER)
-        
         main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=30)
         main_box.set_halign(Gtk.Align.CENTER)
-        main_box.set_valign(Gtk.Align.CENTER)
+        main_box.set_valign(Gtk.Align.CENTER) 
         main_box.set_hexpand(True)
         main_box.set_vexpand(True)
 
+        title_label = self._gtk.Label(_("Select Bed Mesh Grid Size"), "title")
+        title_label.set_halign(Gtk.Align.CENTER)
+        
         grid = Gtk.Grid()
         grid.set_column_spacing(BUTTON_SPACING)
         grid.set_row_spacing(BUTTON_SPACING)
         grid.set_halign(Gtk.Align.CENTER)
-
         grid.set_column_homogeneous(True)
-
         grid.set_row_homogeneous(True)
 
         buttons_data = [
@@ -47,60 +45,43 @@ class Panel(ScreenPanel):
         for i, (grid_size, color) in enumerate(buttons_data):
             button = self._gtk.Button("adjust", _(f"{grid_size} Grid"), color, self.bts, Gtk.PositionType.LEFT, 1)
             button.set_hexpand(True)
-            button.connect("clicked", self._update_probe_count, grid_size)
+            button.connect("clicked", self._confirm_action, grid_size)
             
             col = i % GRID_COLUMNS
             row = i // GRID_COLUMNS
             grid.attach(button, col, row, 1, 1)
 
-        button_custom = self._gtk.Button("edit", _("Custom Grid"), "color5", self.bts, Gtk.PositionType.LEFT, 1)
-        button_custom.set_hexpand(True)
-        button_custom.connect("clicked", self._on_custom_button_clicked)
-        
-        custom_button_row = (len(buttons_data) + GRID_COLUMNS - 1) // GRID_COLUMNS
-        grid.attach(button_custom, 0, custom_button_row, GRID_COLUMNS, 1)
-
+        main_box.pack_start(title_label, False, False, 0)
         main_box.pack_start(grid, False, False, 0)
         
-        self.content.add(title_label)
         self.content.add(main_box)
 
-    def _on_custom_button_clicked(self, widget):
-        dialog = Gtk.Dialog(
-            title=_("Custom Grid Size"),
-            transient_for=self._screen,
-            flags=Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT
-        )
-        dialog.add_buttons(
-            _("Cancel"), Gtk.ResponseType.CANCEL,
-            _("OK"), Gtk.ResponseType.OK
-        )
-        dialog.get_content_area().set_spacing(15)
+    def _confirm_action(self, widget, grid_size):
 
-        label = Gtk.Label(label=_("Enter grid size (e.g., 11 for a 11x11 grid):"))
-        entry = Gtk.Entry()
-        entry.set_input_purpose(Gtk.InputPurpose.NUMBER)
+        text = _("Are you sure you want to set the grid to {grid_size}?\n\nA Klipper firmware restart is required.").format(grid_size=grid_size)
         
-        entry.connect("activate", lambda e: dialog.response(Gtk.ResponseType.OK))
+        buttons = [
+            {"name": _("Continue"), "response": Gtk.ResponseType.OK},
+            {"name": _("Cancel"), "response": Gtk.ResponseType.CANCEL}
+        ]
 
-        dialog.get_content_area().add(label)
-        dialog.get_content_area().add(entry)
-        dialog.show_all()
+        label = Gtk.Label()
+        label.set_markup(text)
+        label.set_hexpand(True)
+        label.set_halign(Gtk.Align.CENTER)
+        label.set_vexpand(True)
+        label.set_valign(Gtk.Align.CENTER)
+        label.set_line_wrap(True)
+        label.set_line_wrap_mode(Pango.WrapMode.WORD_CHAR)
 
-        response = dialog.run()
+        self.confirm_dialog = self._gtk.Dialog(self._screen, buttons, label, self._on_confirm_response, grid_size)
+        self.confirm_dialog.set_title(_("Confirmation"))
 
-        if response == Gtk.ResponseType.OK:
-            text = entry.get_text()
-            try:
-                count = int(text)
-                if count < 2:
-                    self._screen.show_popup_message(_("Error: Grid size must be at least 2."), level=2)
-                else:
-                    self._update_probe_count(None, f"{count}x{count}")
-            except ValueError:
-                self._screen.show_popup_message(_("Error: Please enter a valid number."), level=2)
-        
-        dialog.destroy()
+    def _on_confirm_response(self, dialog, response_id, grid_size):
+
+        self._gtk.remove_dialog(dialog)
+        if response_id == Gtk.ResponseType.OK:
+            self._update_probe_count(None, grid_size)
 
     def _get_active_config_file(self):
         try:

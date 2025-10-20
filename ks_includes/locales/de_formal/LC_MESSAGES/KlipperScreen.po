@@ -93,6 +93,48 @@ msgstr "Druckbett leveln"
 msgid "Bed Mesh"
 msgstr "Druckbett Mesh"
 
+msgid "Grid"
+msgstr "Gitter"
+
+msgid "Select Bed Mesh Grid Size"
+msgstr "Wählen Sie die Größe des Heizbett-Gitters aus"
+
+msgid "Probe count in EECAN.cfg set to"
+msgstr "Sondenanzahl in EECAN.cfg eingestellt auf"
+
+msgid "Probe count in EECAN1.cfg set to"
+msgstr "Sondenanzahl in EECAN1.cfg eingestellt auf"
+
+msgid "A Klipper firmware restart is required."
+msgstr "Ein Neustart der Klipper-Firmware ist erforderlich."
+
+msgid "2x2 Grid"
+msgstr "2x2 Gitter"
+
+msgid "3x3 Grid"
+msgstr "3x3 Gitter"
+
+msgid "4x4 Grid"
+msgstr "4x4 Gitter"
+
+msgid "5x5 Grid"
+msgstr "5x5 Gitter"
+
+msgid "6x6 Grid"
+msgstr "6x6 Gitter"
+
+msgid "7x7 Grid"
+msgstr "7x7 Gitter"
+
+msgid "8x8 Grid"
+msgstr "8x8 Gitter"
+
+msgid "9x9 Grid"
+msgstr "9x9 Gitter"
+
+msgid "10x10 Grid"
+msgstr "10x10 Gitter"
+
 msgid "Bed screw configuration:"
 msgstr "Bettschraubenkonfiguration:"
 

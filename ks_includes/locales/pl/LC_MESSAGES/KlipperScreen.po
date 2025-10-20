@@ -90,6 +90,48 @@ msgstr "Poziom stołu"
 msgid "Bed Mesh"
 msgstr "Siatka stołu"
 
+msgid "Grid"
+msgstr "Siatka"
+
+msgid "Select Bed Mesh Grid Size"
+msgstr "Wybierz rozmiar siatki stołu"
+
+msgid "Probe count in EECAN.cfg set to"
+msgstr "Liczba sond w EECAN.cfg ustawiona na"
+
+msgid "Probe count in EECAN1.cfg set to"
+msgstr "Liczba sond w EECAN1.cfg ustawiona na"
+
+msgid "A Klipper firmware restart is required."
+msgstr "Wymagane jest ponowne uruchomienie oprogramowania Klipper."
+
+msgid "2x2 Grid"
+msgstr "Siatka 2x2"
+
+msgid "3x3 Grid"
+msgstr "Siatka 3x3"
+
+msgid "4x4 Grid"
+msgstr "Siatka 4x4"
+
+msgid "5x5 Grid"
+msgstr "Siatka 5x5"
+
+msgid "6x6 Grid"
+msgstr "Siatka 6x6"
+
+msgid "7x7 Grid"
+msgstr "Siatka 7x7"
+
+msgid "8x8 Grid"
+msgstr "Siatka 8x8"
+
+msgid "9x9 Grid"
+msgstr "Siatka 9x9"
+
+msgid "10x10 Grid"
+msgstr "Siatka 10x10"
+
 msgid "Bed screw configuration:"
 msgstr "Konfiguracja śrub stołu:"
 

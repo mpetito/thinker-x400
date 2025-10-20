@@ -19,6 +19,7 @@ class Panel(ScreenPanel):
             'add': self._gtk.Button("increase", " " + _("Add profile"), "color1", self.bts, Gtk.PositionType.LEFT, 1),
             'calib': self._gtk.Button("refresh", " " + _("Calibrate"), "color3", self.bts, Gtk.PositionType.LEFT, 1),
             'clear': self._gtk.Button("cancel", " " + _("Clear"), "color2", self.bts, Gtk.PositionType.LEFT, 1),
+            'tune': self._gtk.Button("tune", " " + _("Grid"), "color4", self.bts, Gtk.PositionType.LEFT, 1),
         }
         self.buttons['add'].connect("clicked", self.show_create_profile)
         self.buttons['add'].set_hexpand(True)
@@ -26,6 +27,8 @@ class Panel(ScreenPanel):
         self.buttons['clear'].set_hexpand(True)
         self.buttons['calib'].connect("clicked", self.calibrate_mesh)
         self.buttons['calib'].set_hexpand(True)
+        self.buttons['tune'].connect("clicked", self.send_tuning_command)
+        self.buttons['tune'].set_hexpand(True)       
 
         topbar = Gtk.Box(spacing=5)
         topbar.set_hexpand(True)
@@ -33,6 +36,7 @@ class Panel(ScreenPanel):
         topbar.add(self.buttons['add'])
         topbar.add(self.buttons['clear'])
         topbar.add(self.buttons['calib'])
+        topbar.add(self.buttons['tune'])
 
         # Create a grid for all profiles
         self.labels['profiles'] = Gtk.Grid()
@@ -283,3 +287,8 @@ class Panel(ScreenPanel):
     def send_remove_mesh(self, widget, profile):
         self._screen._ws.klippy.gcode_script(KlippyGcodes.bed_mesh_remove(profile))
         self.remove_profile(profile)
+        
+    def send_tuning_command(self, widget):
+        # self._screen.show_popup_message(_("Opening Tuning Settings..."), level=0)
+        logging.info("Tuning button clicked: Opening Tuning Settings Panel.")
+        self._screen.show_panel("tuning_settings_panel", _("Tuning Settings"))

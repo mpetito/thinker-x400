@@ -96,6 +96,9 @@ msgstr "床网"
 msgid "Grid"
 msgstr "网格"
 
+msgid "Current Grid Size: {probe_count}"
+msgstr "当前网格大小: {probe_count}"
+
 msgid "Select Bed Mesh Grid Size"
 msgstr "选择热床网格大小"
 
@@ -105,8 +108,11 @@ msgstr "在 EECAN.cfg 文件中的探针（或探测）点数设置为"
 msgid "Probe count in EECAN1.cfg set to"
 msgstr "在 EECAN1.cfg 文件中的探针（或探测）点数设置为"
 
-msgid "A Klipper firmware restart is required."
-msgstr "需要重启 Klipper 固件。"
+msgid "Probe count in {filename} set to {size}.\n\nA Klipper firmware restart is required."
+msgstr "在 {filename} 文件中的探针点数设置为 {size}。\n\n需要重启 Klipper 固件。"
+
+msgid "Are you sure you want to set the grid to {grid_size}?\n\nA Klipper firmware restart is required."
+msgstr "您确定要将网格设置为 {grid_size} 吗？\n\n需要重启 Klipper 固件。"
 
 msgid "2x2 Grid"
 msgstr "2x2 网格"
@@ -134,6 +140,39 @@ msgstr "9x9 网格"
 
 msgid "10x10 Grid"
 msgstr "10x10 网格"
+
+msgid "Total Print Time"
+msgstr "总打印时间"
+
+msgid "Longest Print Time"
+msgstr "最长打印时间"
+
+msgid "Average Print Time"
+msgstr "平均打印时间"
+
+msgid "Total Filament Used"
+msgstr "耗材使用总量"
+
+msgid "Job Count"
+msgstr "任务次数"
+
+msgid "CHART"
+msgstr "图表"
+
+msgid "Finished"
+msgstr "完成打印"
+
+msgid "Klippy Close"
+msgstr "Klippy关闭"
+
+msgid "Other"
+msgstr "其他"
+
+msgid "Statis"
+msgstr "统计"
+
+msgid "Statistics"
+msgstr "统计"
 
 msgid "Bed screw configuration:"
 msgstr "热床螺丝配置："

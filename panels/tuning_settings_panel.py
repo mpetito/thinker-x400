@@ -2,9 +2,10 @@ import logging
 import gi
 import os
 import subprocess
+import re
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Pango
+from gi.repository import Gtk, Pango, GLib 
 from ks_includes.screen_panel import ScreenPanel
 
 logging.getLogger(__name__).setLevel(logging.INFO)
@@ -20,11 +21,16 @@ class Panel(ScreenPanel):
         GRID_COLUMNS = 3
         BUTTON_SPACING = 25
         
-        main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=30)
+        main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
         main_box.set_halign(Gtk.Align.CENTER)
         main_box.set_valign(Gtk.Align.CENTER) 
         main_box.set_hexpand(True)
         main_box.set_vexpand(True)
+
+        current_probe_count = self._get_current_probe_count()
+        current_probe_count_text = _("Current Grid Size: {probe_count}").format(probe_count=current_probe_count)
+        self.current_probe_count_label = self._gtk.Label(current_probe_count_text) 
+        self.current_probe_count_label.set_halign(Gtk.Align.CENTER)
 
         title_label = self._gtk.Label(_("Select Bed Mesh Grid Size"), "title")
         title_label.set_halign(Gtk.Align.CENTER)
@@ -51,13 +57,18 @@ class Panel(ScreenPanel):
             row = i // GRID_COLUMNS
             grid.attach(button, col, row, 1, 1)
 
+        main_box.pack_start(self.current_probe_count_label, False, False, 0)
         main_box.pack_start(title_label, False, False, 0)
         main_box.pack_start(grid, False, False, 0)
         
         self.content.add(main_box)
 
-    def _confirm_action(self, widget, grid_size):
+    def _update_grid_size_label(self):
+        current_probe_count = self._get_current_probe_count()
+        new_text = _("Current Grid Size: {probe_count}").format(probe_count=current_probe_count)
+        self.current_probe_count_label.set_text(new_text)
 
+    def _confirm_action(self, widget, grid_size):
         text = _("Are you sure you want to set the grid to {grid_size}?\n\nA Klipper firmware restart is required.").format(grid_size=grid_size)
         
         buttons = [
@@ -78,10 +89,9 @@ class Panel(ScreenPanel):
         self.confirm_dialog.set_title(_("Confirmation"))
 
     def _on_confirm_response(self, dialog, response_id, grid_size):
-
         self._gtk.remove_dialog(dialog)
         if response_id == Gtk.ResponseType.OK:
-            self._update_probe_count(None, grid_size)
+            self._update_probe_count(grid_size)
 
     def _get_active_config_file(self):
         try:
@@ -89,22 +99,49 @@ class Panel(ScreenPanel):
                 for line in f:
                     line = line.strip()
                     if "[include EECAN1.cfg]" in line:
-                        logging.info("Found active config: EECAN1.cfg")
+                        logging.info(_("Found active config: EECAN1.cfg"))
                         return "EECAN1.cfg"
                     if "[include EECAN.cfg]" in line:
-                        logging.info("Found active config: EECAN.cfg")
+                        logging.info(_("Found active config: EECAN.cfg"))
                         return "EECAN.cfg"
             return None
         except FileNotFoundError:
             logging.error(f"Main config file not found: {PRINTER_CFG_PATH}")
-            self._screen.show_popup_message(_("Error: printer.cfg not found."), level=2)
+            self._screen.show_popup_message(_("Error: printer.cfg not found."), level=2, timeout=5)
             return None
 
-    def _update_probe_count(self, widget, grid_size):       
+    def _get_current_probe_count(self):
+        target_filename = self._get_active_config_file()
+        if not target_filename:
+            logging.warning("Could not determine active config to read probe_count.")
+            return "N/A"
+
+        target_config_path = os.path.join(CONFIG_DIR, target_filename)
+        if not os.path.exists(target_config_path):
+            logging.warning(f"Target config file not found: {target_config_path}")
+            return "N/A"
+
+        try:
+            with open(target_config_path, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    match = re.match(r"^\s*probe_count\s*:\s*(\d+)\s*,\s*(\d+)", line)
+                    if match:
+                        count1 = match.group(1)
+                        count2 = match.group(2)
+                        logging.info(f"Found probe_count: {count1}, {count2} in {target_filename}")
+                        return f"{count1}x{count2}"
+            logging.warning(f"probe_count not found in {target_filename}")
+            return _("Not Set")
+        except Exception as e:
+            logging.error(f"Error reading probe_count from {target_config_path}: {e}")
+            return _("Error")
+
+    def _update_probe_count(self, grid_size):       
         target_filename = self._get_active_config_file()
         if not target_filename:
             logging.error("Could not determine the active EECAN config file from printer.cfg.")
-            self._screen.show_popup_message(_("Error: Active config not found in printer.cfg."), level=2)
+            self._screen.show_popup_message(_("Error: Active config not found in printer.cfg."), level=2, timeout=5)
             return
             
         target_config_path = os.path.join(CONFIG_DIR, target_filename)
@@ -113,7 +150,7 @@ class Panel(ScreenPanel):
         try:
             if not os.path.exists(target_config_path):
                 logging.error(f"Target config file does not exist: {target_config_path}")
-                self._screen.show_popup_message(_("Error: Target config file does not exist."), level=2)
+                self._screen.show_popup_message(_("Error: Target config file does not exist."), level=2, timeout=5)
                 return
 
             count = grid_size.split('x')[0]
@@ -127,17 +164,21 @@ class Panel(ScreenPanel):
             logging.info(f"Sync command executed after updating {target_filename}.")
             logging.info(f"Successfully updated {target_filename}.")
             
-            success_message = _(f"Probe count in {target_filename} set to {grid_size}.\n\nA Klipper firmware restart is required.")
-            self._screen.show_popup_message(success_message, level=1)
+            self._update_grid_size_label()
+            
+            success_message = _("Probe count in {filename} set to {size}.\n\nA Klipper firmware restart is required.").format(
+                filename=target_filename,
+                size=grid_size
+            )
+
+            self._screen.show_popup_message(success_message, level=1, timeout=2)
 
         except subprocess.CalledProcessError as e:
             logging.error(f"Failed to execute sed command on {target_filename}. Stderr: {e.stderr}")
-            self._screen.show_popup_message(_("Error: Failed to update config file."), level=2)
+            self._screen.show_popup_message(_("Error: Failed to update config file."), level=2, timeout=5)
         except Exception as e:
             logging.error(f"An unexpected error occurred: {e}")
-            self._screen.show_popup_message(_("Error: An unknown error occurred."), level=2)
-        finally:
-            self.on_back()
+            self._screen.show_popup_message(_("Error: An unknown error occurred."), level=2, timeout=5)
 
     def activate(self):
         pass

@@ -12,19 +12,16 @@ class Panel(ScreenPanel):
 
     def __init__(self, screen, title):
         super().__init__(screen, title)
-        #self.settings = {}
         self._screen = screen
         self._gtk = screen.gtk
         self.menu = ['move_menu']
         self.buttons = {
-
             'z+': self._gtk.Button("extruder", _("Shaper calibrate"), "color3"),
-           # 'z-': self._gtk.Button("z-closer", _("Z Calibrate"), "color3"),
             'ALL': self._gtk.Button("z-closer", _("Calibrate All"), "color3"),
-
             'home': self._gtk.Button("heat-up", _("PID calibrate"), "color4"),
             'bed_pid': self._gtk.Button("heat-up", _("PID calibrate")+'BED', "color4"),
             'motors_off': self._gtk.Button("z-tilt", _("Z Tilt"), "color4"),
+            'bed_mesh': self._gtk.Button("bed-level", _("Bed Mesh"), "color1"),
         }
         self.height_map_range = ''
         self.retrying = ''
@@ -77,6 +74,8 @@ class Panel(ScreenPanel):
         self.buttons['bed_pid'].connect("clicked", self._confirm_send_action,
                                      _("Are you sure to Calibrate?"),
                                      "printer.gcode.script", script)
+                                     
+        self.buttons['bed_mesh'].connect("clicked", self.go_to_bed_mesh)
 
         grid = self._gtk.HomogeneousGrid()
 
@@ -86,6 +85,8 @@ class Panel(ScreenPanel):
         grid.attach(self.buttons['motors_off'], 1, 1, 1, 1)
         grid.attach(self.buttons['ALL'], 1, 0, 1, 1)
         grid.attach(self.buttons['bed_pid'], 3, 0, 1, 1)
+        grid.attach(self.buttons['bed_mesh'], 3, 1, 1, 1)
+
 
         distgrid = Gtk.Grid()
 
@@ -105,7 +106,6 @@ class Panel(ScreenPanel):
         self.content.add(self.labels['move_menu'])
 
         printer_cfg = self._printer.get_config_section("printer")
-        # The max_velocity parameter is not optional in klipper config.
         max_velocity = int(float(printer_cfg["max_velocity"]))
         if max_velocity <= 1:
             logging.error(f"Error getting max_velocity\n{printer_cfg}")
@@ -132,10 +132,13 @@ class Panel(ScreenPanel):
         self.labels['options_menu'].add(self.labels['options'])
 
     def process_busy(self, busy):
-        buttons = ("z+","z-","home", "motors_off","ALL","bed_pid")
+        buttons = ("z+","z-","home", "motors_off","ALL","bed_pid", "bed_mesh")
         for button in buttons:
             if button in self.buttons:
                 self.buttons[button].set_sensitive(not busy)
+
+    def go_to_bed_mesh(self, widget):
+        self._screen.show_panel('bed_mesh', _("Bed Mesh"))
 
     def _dialog_show(self, widget, text, method, params=None):
         buttons = [
@@ -168,7 +171,7 @@ class Panel(ScreenPanel):
         label.set_hexpand(True)
         label.set_halign(Gtk.Align.CENTER)
         label.set_vexpand(True)
-        label.set_valign(Gtk.Align.CENTER)
+        label.set_valign(G.Align.CENTER)
         label.set_line_wrap(True)
         label.set_line_wrap_mode(Pango.WrapMode.WORD_CHAR)
 
@@ -364,5 +367,3 @@ class Panel(ScreenPanel):
                 self._screen.base_panel.action_bar.set_sensitive(False)
             #script = {"script": "save_config"}
             #self._confirm_send_action(self._screen, "save config?", "printer.gcode.script", script)
-
-

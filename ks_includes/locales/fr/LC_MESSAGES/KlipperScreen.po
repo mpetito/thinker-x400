@@ -93,6 +93,48 @@ msgstr "Nivellement"
 msgid "Bed Mesh"
 msgstr "Maillage du plateau"
 
+msgid "Grid"
+msgstr "Grille"
+
+msgid "Select Bed Mesh Grid Size"
+msgstr "Sélectionner la taille de la grille du plateau"
+
+msgid "Probe count in EECAN.cfg set to"
+msgstr "Nombre de sondes dans EECAN.cfg défini à"
+
+msgid "Probe count in EECAN1.cfg set to"
+msgstr "Nombre de sondes dans EECAN1.cfg défini à"
+
+msgid "A Klipper firmware restart is required."
+msgstr "Un redémarrage du firmware Klipper est requis."
+
+msgid "2x2 Grid"
+msgstr "Grille 2x2"
+
+msgid "3x3 Grid"
+msgstr "Grille 3x3"
+
+msgid "4x4 Grid"
+msgstr "Grille 4x4"
+
+msgid "5x5 Grid"
+msgstr "Grille 5x5"
+
+msgid "6x6 Grid"
+msgstr "Grille 6x6"
+
+msgid "7x7 Grid"
+msgstr "Grille 7x7"
+
+msgid "8x8 Grid"
+msgstr "Grille 8x8"
+
+msgid "9x9 Grid"
+msgstr "Grille 9x9"
+
+msgid "10x10 Grid"
+msgstr "Grille 10x10"
+
 msgid "Bed screw configuration:"
 msgstr "Configuration des vis:"
 

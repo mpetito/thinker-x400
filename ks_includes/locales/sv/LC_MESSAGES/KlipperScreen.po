@@ -93,6 +93,48 @@ msgstr ""
 msgid "Bed Mesh"
 msgstr ""
 
+msgid "Grid"
+msgstr "Rutnät"
+
+msgid "Select Bed Mesh Grid Size"
+msgstr "Välj rutnätsstorlek för bädden"
+
+msgid "Probe count in EECAN.cfg set to"
+msgstr "Antal mätpunkter i EECAN.cfg är inställt på"
+
+msgid "Probe count in EECAN1.cfg set to"
+msgstr "Antal mätpunkter i EECAN1.cfg är inställt på"
+
+msgid "A Klipper firmware restart is required."
+msgstr "En omstart av Klippers firmware krävs."
+
+msgid "2x2 Grid"
+msgstr "2x2 Rutnät"
+
+msgid "3x3 Grid"
+msgstr "3x3 Rutnät"
+
+msgid "4x4 Grid"
+msgstr "4x4 Rutnät"
+
+msgid "5x5 Grid"
+msgstr "5x5 Rutnät"
+
+msgid "6x6 Grid"
+msgstr "6x6 Rutnät"
+
+msgid "7x7 Grid"
+msgstr "7x7 Rutnät"
+
+msgid "8x8 Grid"
+msgstr "8x8 Rutnät"
+
+msgid "9x9 Grid"
+msgstr "9x9 Rutnät"
+
+msgid "10x10 Grid"
+msgstr "10x10 Rutnät"
+
 msgid "Bed screw configuration:"
 msgstr ""
 

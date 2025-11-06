@@ -88,6 +88,48 @@ msgstr "ベッドレベル"
 msgid "Bed Mesh"
 msgstr "ベッドメッシュ"
 
+msgid "Grid"
+msgstr "グリッド"
+
+msgid "Select Bed Mesh Grid Size"
+msgstr "ベッドメッシュのグリッドサイズを選択"
+
+msgid "Probe count in EECAN.cfg set to"
+msgstr "EECAN.cfg のプローブ数をに設定"
+
+msgid "Probe count in EECAN1.cfg set to"
+msgstr "EECAN1.cfg のプローブ数をに設定"
+
+msgid "A Klipper firmware restart is required."
+msgstr "Klipper ファームウェアの再起動が必要です。"
+
+msgid "2x2 Grid"
+msgstr "2x2 グリッド"
+
+msgid "3x3 Grid"
+msgstr "3x3 グリッド"
+
+msgid "4x4 Grid"
+msgstr "4x4 グリッド"
+
+msgid "5x5 Grid"
+msgstr "5x5 グリッド"
+
+msgid "6x6 Grid"
+msgstr "6x6 グリッド"
+
+msgid "7x7 Grid"
+msgstr "7x7 グリッド"
+
+msgid "8x8 Grid"
+msgstr "8x8 グリッド"
+
+msgid "9x9 Grid"
+msgstr "9x9 グリッド"
+
+msgid "10x10 Grid"
+msgstr "10x10 グリッド"
+
 msgid "Bed screw configuration:"
 msgstr "ベッドスクリュー設定:"
 

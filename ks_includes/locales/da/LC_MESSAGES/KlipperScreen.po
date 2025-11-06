@@ -94,6 +94,48 @@ msgstr ""
 msgid "Calibrate"
 msgstr "Kalibrér"
 
+msgid "Grid"
+msgstr "Gitter"
+
+msgid "Select Bed Mesh Grid Size"
+msgstr "Vælg størrelse på heatbed-gitter"
+
+msgid "Probe count in EECAN.cfg set to"
+msgstr "Antal prober i EECAN.cfg indstillet til"
+
+msgid "Probe count in EECAN1.cfg set to"
+msgstr "Antal prober i EECAN1.cfg indstillet til"
+
+msgid "A Klipper firmware restart is required."
+msgstr "En genstart af Klipper-firmware er påkrævet."
+
+msgid "2x2 Grid"
+msgstr "2x2 Gitter"
+
+msgid "3x3 Grid"
+msgstr "3x3 Gitter"
+
+msgid "4x4 Grid"
+msgstr "4x4 Gitter"
+
+msgid "5x5 Grid"
+msgstr "5x5 Gitter"
+
+msgid "6x6 Grid"
+msgstr "6x6 Gitter"
+
+msgid "7x7 Grid"
+msgstr "7x7 Gitter"
+
+msgid "8x8 Grid"
+msgstr "8x8 Gitter"
+
+msgid "9x9 Grid"
+msgstr "9x9 Gitter"
+
+msgid "10x10 Grid"
+msgstr "10x10 Gitter"
+
 msgid "Calibrated"
 msgstr "Kalibreret"
 

@@ -94,6 +94,48 @@ msgstr "Az ágycsavar konfigurációja:"
 msgid "Calibrate"
 msgstr "Kalibrálás"
 
+msgid "Grid"
+msgstr "Rács"
+
+msgid "Select Bed Mesh Grid Size"
+msgstr "Fűtött ágy rácsméretének kiválasztása"
+
+msgid "Probe count in EECAN.cfg set to"
+msgstr "A szondapontok száma az EECAN.cfg fájlban a következőre van állítva:"
+
+msgid "Probe count in EECAN1.cfg set to"
+msgstr "A szondapontok száma az EECAN1.cfg fájlban a következőre van állítva:"
+
+msgid "A Klipper firmware restart is required."
+msgstr "A Klipper firmware újraindítása szükséges."
+
+msgid "2x2 Grid"
+msgstr "2x2 rács"
+
+msgid "3x3 Grid"
+msgstr "3x3 rács"
+
+msgid "4x4 Grid"
+msgstr "4x4 rács"
+
+msgid "5x5 Grid"
+msgstr "5x5 rács"
+
+msgid "6x6 Grid"
+msgstr "6x6 rács"
+
+msgid "7x7 Grid"
+msgstr "7x7 rács"
+
+msgid "8x8 Grid"
+msgstr "8x8 rács"
+
+msgid "9x9 Grid"
+msgstr "9x9 rács"
+
+msgid "10x10 Grid"
+msgstr "10x10 rács"
+
 msgid "Calibrated"
 msgstr "Kalibrálva"
 

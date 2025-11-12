@@ -143,6 +143,7 @@ class Panel(ScreenPanel):
         self.entry_ssid.grab_focus_without_selecting()
 
         self.entry_pss = Gtk.Entry()
+        self.entry_pss.set_visibility(False)
         self.entry_pss.set_hexpand(True)
         self.entry_pss.set_vexpand(False)
         self.entry_pss.connect("button-press-event", self._screen.show_keyboard)

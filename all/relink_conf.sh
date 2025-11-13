@@ -108,6 +108,9 @@ echo makerbase | sudo -S systemctl daemon-reload
 echo makerbase | sudo -S systemctl enable farm3d.service
 echo makerbase | sudo -S systemctl restart farm3d.service
 echo makerbase | sudo -S systemctl disable klipper-mcu.service
+chmod 777 /home/mks/KlipperScreen/* -Rf
+chmod 777 /home/mks/KlipperScreen/all/*
+chmod 777 /home/mks/printer_data/config/*
 sync
 #echo makerbase | sudo -S apt remove unattended-upgrades
 

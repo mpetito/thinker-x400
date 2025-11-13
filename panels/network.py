@@ -5,7 +5,7 @@ import netifaces
 import subprocess
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk, GLib, Pango
+from gi.repository import Gtk, Gdk, GLib, Pango, GdkPixbuf
 from ks_includes.screen_panel import ScreenPanel
 
 
@@ -134,6 +134,7 @@ class Panel(ScreenPanel):
         ebox_wifi.set_vexpand(False)
 
         self.entry_ssid = Gtk.Entry()
+        self.entry_ssid.set_size_request(-1, 40)
         self.entry_ssid.set_hexpand(True)
         self.entry_ssid.set_vexpand(False)
         self.entry_ssid.connect("button-press-event", self._screen.show_keyboard)
@@ -143,6 +144,31 @@ class Panel(ScreenPanel):
         self.entry_ssid.grab_focus_without_selecting()
 
         self.entry_pss = Gtk.Entry()
+        self.entry_pss.set_size_request(-1, 40)
+        self.entry_pss.set_visibility(False)
+        # ---  ---
+        icon_path = "/home/mks/KlipperScreen/styles/material-light/images2"
+        # hide_icon_file = os.path.join(icon_path, "visibility_off.png")  
+        # show_icon_file = os.path.join(icon_path, "visibility.png")   
+        hide_icon_file = os.path.join(icon_path, "visibility_off.png")  
+        show_icon_file = os.path.join(icon_path, "visibility.png")  
+
+        self.show_icon_pixbuf = None
+        self.hide_icon_pixbuf = None
+
+        try:
+
+            self.hide_icon_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(hide_icon_file, 38, 38)
+            self.show_icon_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(show_icon_file, 38, 38)
+            
+            self.entry_pss.set_icon_from_pixbuf(Gtk.EntryIconPosition.SECONDARY, self.hide_icon_pixbuf)
+
+        except GLib.GError as e:
+            logging.warning(f"Could not load custom password icons: {e}. Falling back to default symbolic icons.")
+            self.entry_pss.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "view-conceal-symbolic")
+
+        self.entry_pss.connect("icon-press", self.toggle_password_visibility)
+        # ---  ---
         self.entry_pss.set_hexpand(True)
         self.entry_pss.set_vexpand(False)
         self.entry_pss.connect("button-press-event", self._screen.show_keyboard)
@@ -216,6 +242,21 @@ class Panel(ScreenPanel):
        # self.content.add(box)
         self.labels['main_box'] = box
         self.initialized = True
+    # ---  ---
+    def toggle_password_visibility(self, entry, icon_pos, event):
+        is_visible = not entry.get_visibility()
+        entry.set_visibility(is_visible)
+
+        if self.show_icon_pixbuf and self.hide_icon_pixbuf:
+            if is_visible:
+                entry.set_icon_from_pixbuf(Gtk.EntryIconPosition.SECONDARY, self.show_icon_pixbuf)
+            else:
+                entry.set_icon_from_pixbuf(Gtk.EntryIconPosition.SECONDARY, self.hide_icon_pixbuf)
+        else:
+            if is_visible:
+                entry.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "view-reveal-symbolic")
+            else:
+                entry.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "view-conceal-symbolic")  
 
     def connect_wifi(self,*args):
         self._screen.remove_keyboard()

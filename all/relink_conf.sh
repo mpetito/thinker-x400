@@ -42,6 +42,8 @@ cp /home/mks/KlipperScreen/config/timelapse.cfg  /home/mks/moonraker-timelapse/k
 cp /home/mks/KlipperScreen/config/v1_1.cfg  /home/mks/printer_data/config/
 cp /home/mks/KlipperScreen/config/v1_2.cfg  /home/mks/printer_data/config/
 cp /home/mks/KlipperScreen/config/EECAN1.cfg /home/mks/printer_data/config/
+cp /home/mks/KlipperScreen/config/EECAN1_350.cfg /home/mks/printer_data/config/
+cp /home/mks/KlipperScreen/config/EECAN1_300.cfg /home/mks/printer_data/config/
 cp /home/mks/KlipperScreen/config/EECAN2.cfg /home/mks/printer_data/config/
 #rm /home/mks/moonraker/moonraker/components/update_manager/update_manager.py
 

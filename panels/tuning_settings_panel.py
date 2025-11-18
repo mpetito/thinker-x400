@@ -98,12 +98,12 @@ class Panel(ScreenPanel):
             with open(PRINTER_CFG_PATH, 'r') as f:
                 for line in f:
                     line = line.strip()
-                    if "[include EECAN1.cfg]" in line:
-                        logging.info(_("Found active config: EECAN1.cfg"))
-                        return "EECAN1.cfg"
-                    if "[include EECAN.cfg]" in line:
-                        logging.info(_("Found active config: EECAN.cfg"))
-                        return "EECAN.cfg"
+                    if "[include EECAN1_350.cfg]" in line:
+                        logging.info(_("Found active config: EECAN1_350.cfg"))
+                        return "EECAN1_350.cfg"
+                    if "[include EECAN1_300.cfg]" in line:
+                        logging.info(_("Found active config: EECAN1_300.cfg"))
+                        return "EECAN1_300.cfg"
             return None
         except FileNotFoundError:
             logging.error(f"Main config file not found: {PRINTER_CFG_PATH}")

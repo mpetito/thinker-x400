@@ -98,6 +98,9 @@ class Panel(ScreenPanel):
             with open(PRINTER_CFG_PATH, 'r') as f:
                 for line in f:
                     line = line.strip()
+                    if "[include EECAN.cfg]" in line:	
+                        logging.info(_("Found active config: EECAN.cfg"))	
+                        return "EECAN.cfg"
                     if "[include EECAN1_350.cfg]" in line:
                         logging.info(_("Found active config: EECAN1_350.cfg"))
                         return "EECAN1_350.cfg"

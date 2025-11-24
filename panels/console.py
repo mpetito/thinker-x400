@@ -204,7 +204,10 @@ class Panel(ScreenPanel):
             target_cfg = "" 
             response_msg = "" 
 
-            if param == "1_350":
+            if param == "1_000":
+                target_cfg = "EECAN.cfg"
+                response_msg = "Current configuration set for 300.\n Please restart Klipper."
+            elif param == "1_350":
                 target_cfg = "EECAN1_350.cfg"
                 response_msg = "Current configuration set for 350.\n Please restart Klipper." 
             elif param == "1_300":
@@ -214,7 +217,7 @@ class Panel(ScreenPanel):
                 target_cfg = f"EECAN{param}.cfg"
                 response_msg = f"Current configuration set for version {param}." 
             elif param == "":
-                self.add_gcode("response", time.time(), "V command requires a parameter (e.g., V1, V1_300, V1_350)")
+                self.add_gcode("response", time.time(), "V command requires a parameter (e.g., V1, V1_000, V1_300, V1_350)")
                 return
             else:
                 self.add_gcode("response", time.time(), f"Invalid V parameter: {param}")

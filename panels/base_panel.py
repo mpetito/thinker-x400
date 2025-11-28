@@ -45,9 +45,11 @@ class BasePanel(ScreenPanel):
         #    "name": "Macros",
         #    "panel": "gcode_macros"
         #})
-        self.control['power'] = self._gtk.Button('shutdown', scale=abscale)
-        self.control['power'].connect("clicked", self.reboot_poweroff, "poweroff")
+        # self.control['power'] = self._gtk.Button('shutdown', scale=abscale)
+        # self.control['power'].connect("clicked", self.reboot_poweroff, "poweroff")
 
+        self.control['power'] = self._gtk.Button('console', scale=abscale)
+        self.control['power'].connect("clicked", self.go_to_console)
 
 
         self.control['estop'] = self._gtk.Button('emergency', scale=abscale)
@@ -69,6 +71,7 @@ class BasePanel(ScreenPanel):
         self.action_bar.set_size_request(self._gtk.action_bar_width, self._gtk.action_bar_height)
         self.action_bar.add(self.control['home'])
         self.action_bar.add(self.control['back'])
+
 
         self.show_back(False)
         if self.buttons_showing['printer_select']:
@@ -115,6 +118,8 @@ class BasePanel(ScreenPanel):
             self.main_grid.attach(self.content, 1, 1, 1, 1)
 
         self.update_time()
+    def go_to_console(self, widget):
+        self._screen.show_panel("console", "Console")
     def reboot_poweroff(self, widget, method):
         scroll = self._gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)

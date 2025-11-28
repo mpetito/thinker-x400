@@ -101,6 +101,7 @@ echo makerbase | sudo -S mv /usr/share/unattended-upgrades/unattended-upgrade-sh
 echo makerbase | sudo -S mv /etc/systemd/system/klipper-mcu.service /etc/systemd/system/klipper-mcu.serviceb
 echo makerbase | sudo -S mv /etc/systemd/system/moonraker-obico.service /etc/systemd/system/moonraker-obico.serviceb
 cp /home/mks/KlipperScreen/moonraker/moonraker/components/machine.py /home/mks/moonraker/moonraker/components/
+cp /home/mks/KlipperScreen/moonraker/moonraker/components/file_manager/file_manager.py /home/mks/moonraker/moonraker/components/file_manager/file_manager.py
 sync
 echo makerbase | sudo -S systemctl disable unattended-upgrades.service
 echo makerbase | sudo -S systemctl restart KlipperScreen.service

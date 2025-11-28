@@ -792,7 +792,7 @@ class FileManager:
     def gen_temp_upload_path(self) -> str:
         loop_time = int(self.event_loop.get_loop_time())
         return os.path.join(
-            tempfile.gettempdir(),
+            "/home/mks/printer_data/gcodes/", # tempfile.gettempdir(),
             f"moonraker.upload-{loop_time}.mru")
 
     async def finalize_upload(self,

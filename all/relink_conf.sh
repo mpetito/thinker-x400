@@ -1,18 +1,18 @@
 #!/bin/sh +e
 
-sed -i 's/ERYONE_THR/EECAN/g' /home/mks/printer_data/config/printer.cfg 
-sed -i 's/runout1.cfg/runout.cfg/g' /home/mks/printer_data/config/printer.cfg
+#sed -i 's/ERYONE_THR/EECAN/g' /home/mks/printer_data/config/printer.cfg 
+#sed -i 's/runout1.cfg/runout.cfg/g' /home/mks/printer_data/config/printer.cfg
 
-sed -i 's/runout_p.cfg/runout.cfg/g' /home/mks/printer_data/config/printer.cfg
-sed -i 's/EECAN_p.cfg/EECAN.cfg/g' /home/mks/printer_data/config/printer.cfg
-sed -i 's/x400_p.cfg/x400.cfg/g' /home/mks/printer_data/config/printer.cfg
+#sed -i 's/runout_p.cfg/runout.cfg/g' /home/mks/printer_data/config/printer.cfg
+#sed -i 's/EECAN_p.cfg/EECAN.cfg/g' /home/mks/printer_data/config/printer.cfg
+#sed -i 's/x400_p.cfg/x400.cfg/g' /home/mks/printer_data/config/printer.cfg
 
-sed -i 's/ERYONE_THR/EECAN/g' /home/mks/printer_data/config/canuid.cfg 
-sed -i 's/hold_current: 0.5/hold_current: 0.6/g' /home/mks/printer_data/config/printer.cfg 
+#sed -i 's/ERYONE_THR/EECAN/g' /home/mks/printer_data/config/canuid.cfg 
+#sed -i 's/hold_current: 0.5/hold_current: 0.6/g' /home/mks/printer_data/config/printer.cfg 
 echo makerbase | sudo -S sed -i 's/txqueuelen 128/txqueuelen 1024/g' /etc/network/interfaces.d/can0
 
 sed   -i '/^.*x400.cfg.*$/,/^.*SAVE_CONFIG.*$/{/^.*x400.cfg.*$/!{/^.*SAVE_CONFIG.*$/!d}}'  /home/mks/printer_data/config/printer.cfg 
-sed   -i '/^.*x400_p.cfg.*$/,/^.*SAVE_CONFIG.*$/{/^.*x400_p.cfg.*$/!{/^.*SAVE_CONFIG.*$/!d}}'  /home/mks/printer_data/config/printer.cfg 
+#sed   -i '/^.*x400_p.cfg.*$/,/^.*SAVE_CONFIG.*$/{/^.*x400_p.cfg.*$/!{/^.*SAVE_CONFIG.*$/!d}}'  /home/mks/printer_data/config/printer.cfg 
 #sed  -i '9i [include x400.cfg]' /home/mks/printer_data/config/printer.cfg 
 
 sed -i 's/#\[include KAMP_Settings.cfg\]/[include KAMP_Settings.cfg]/g' /home/mks/printer_data/config/printer.cfg
@@ -41,10 +41,10 @@ rm /home/mks/printer_data/config/chamber.cfg
 cp /home/mks/KlipperScreen/config/timelapse.cfg  /home/mks/moonraker-timelapse/klipper_macro
 cp /home/mks/KlipperScreen/config/v1_1.cfg  /home/mks/printer_data/config/
 cp /home/mks/KlipperScreen/config/v1_2.cfg  /home/mks/printer_data/config/
-cp /home/mks/KlipperScreen/config/EECAN1.cfg /home/mks/printer_data/config/
+#cp /home/mks/KlipperScreen/config/EECAN1.cfg /home/mks/printer_data/config/
 cp /home/mks/KlipperScreen/config/EECAN1_350.cfg /home/mks/printer_data/config/
 cp /home/mks/KlipperScreen/config/EECAN1_300.cfg /home/mks/printer_data/config/
-cp /home/mks/KlipperScreen/config/EECAN2.cfg /home/mks/printer_data/config/
+#cp /home/mks/KlipperScreen/config/EECAN2.cfg /home/mks/printer_data/config/
 #rm /home/mks/moonraker/moonraker/components/update_manager/update_manager.py
 
 #ln -s /home/mks/KlipperScreen/moonraker/moonraker/components/update_manager/update_manager.py  /home/mks/moonraker/moonraker/components/update_manager/update_manager.py

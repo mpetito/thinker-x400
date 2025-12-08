@@ -1,5 +1,52 @@
-
 Welcome, this is the Klipper and Screen Software of Eryone Thinker X400 3D printer
+
+### the main changlog:
+
+ 2025.12.2:
+
+-   increase the bed heat waiting temperature range to reduce the waiting time.
+  
+2025.11.28:
+
+-   fix a bug need to home first in some pause/resume case
+-   optimize the menu on the left 
+-   support upload file bigger than 500MB
+-   fix a bug that cann't parse the thumbnail image with complicate 3d mode
+  
+2025.11.17:
+
+  - support high temperature toolhead board that can compatible with 350C hothend
+-   optimize the chamber heater heating process.
+
+2025.11.12:
+
+-   auto hiden the passward of wifi
+
+2025.11.6: 
+
+-   support the new toolhead board with new ADC chip for strain gauge sensor
+-   fix a bug for homing printer
+-   support changing the bed mesh points on the screen
+
+2025.10.9:
+
+-   fix a resume print bug after power off.
+-   set the printer disconnect to the cloud by default
+
+2025.8:
+
+-   support change the load/unload temperature on the screen 
+-   add timezone auto update
+
+2025.7:
+
+-   support resume printing at any layer on the screen
+-   optimize the memory process while printing to prevent timeout problem by klipper.
+
+
+
+
+
 
 
 

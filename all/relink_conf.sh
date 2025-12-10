@@ -28,7 +28,8 @@ rm /home/mks/printer_data/config/runout.cfg
 #rm /home/mks/printer_data/config/KlipperScreen.conf
 rm /home/mks/printer_data/config/EECAN.cfg
 rm /home/mks/printer_data/config/x400.cfg
-
+rm /home/mks/printer_data/config/EECAN1.cfg
+rm /home/mks/printer_data/config/EECAN2.cfg
 #rm /home/mks/printer_data/config/EECAN_p.cfg
 #rm /home/mks/printer_data/config/runout_p.cfg
 #rm /home/mks/printer_data/config/x400_p.cfg

@@ -39,7 +39,7 @@ fi
 # Reload systemd-timedated so the new timezone is applied immediately
 systemctl restart systemd-timedated
 
-echb "systemd-timedated has been restarted to apply timezone immediately."
+echo "systemd-timedated has been restarted to apply timezone immediately."
 
 #Enable time synchronization service
 systemctl restart chrony

@@ -162,8 +162,12 @@ class KlipperScreen(Gtk.Window):
         self.set_screenblanking_timeout(self._config.get_main_config().get('screen_blanking'))
 
         self.initial_connection()
-
-        subprocess.run(["/bin/bash", "/home/mks/KlipperScreen/all/auto_timezone.sh"]) # Timezone
+        
+        #subprocess.run(["/bin/bash", "/home/mks/KlipperScreen/all/auto_timezone.sh"]) # Timezone
+        password = "makerbase\n"
+        cmd = ["sudo", "-S", "/bin/bash", "/home/mks/KlipperScreen/all/auto_timezone.sh"]
+        subprocess.run(cmd, input=password, text=True, capture_output=True)
+        
         subprocess.run(["/home/mks/KlipperScreen/all/lcd_180.sh", ""])  # luojin
         subprocess.Popen(["python3", "/home/mks/mainsail/all/qr.py"])  # luojin
         result = subprocess.run(['hostname', '-I'], stdout=subprocess.PIPE)

@@ -56,6 +56,10 @@ class Panel(ScreenPanel):
         self.upgrade.set_vexpand(False)
         self.upgrade.set_sensitive(False)
 
+        self.Reloading = self._gtk.Button('reloadUI', _('ReloadUI'), 'color3')
+        self.Reloading.connect("clicked", self.reboot_poweroff_update, "Reloading")
+        self.Reloading.set_vexpand(False)
+        self.Reloading.set_sensitive(True)
 
         scroll = self._gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
@@ -143,6 +147,7 @@ class Panel(ScreenPanel):
         self.grid.attach(self.refresh, 1, 2, 1, 1)
         #grid.attach(reboot, 1, 2, 1, 1)
         self.grid.attach(self.upgrade, 2, 2, 1, 1)
+        self.grid.attach(self.Reloading, 0, 2, 1, 1)
 
     #scroll.add(vbox)
         self.content.add(self.grid)
@@ -457,6 +462,8 @@ class Panel(ScreenPanel):
             label = Gtk.Label(label=_("Perform a full upgrade? this update may take about 5 to 10 minutes"))
         elif method == "recovery":
             label = Gtk.Label(label=_("Recovery to factoring setting? this update may take about 1 minutes"))
+        elif method == "Reloading":
+            label = Gtk.Label(label=_("Reloading the UI? This might take about 1 minutes"))
 
         vbox.add(label)
         scroll.add(vbox)
@@ -499,6 +506,8 @@ class Panel(ScreenPanel):
                 self._screen.show_popup_message("Recovering, this may take about 1 minute", 1, 10)
                 GLib.timeout_add_seconds(1, self.process_update, "recovery",'')
                 subprocess.Popen(["/home/mks/mainsail/all/recovery.sh", "&"])
+            elif method == "Reloading":  #Reloading UI
+                os.system("systemctl restart KlipperScreen.service")
 
     def _attach_progress_bar(self):
         if self.grid is not None:

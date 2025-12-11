@@ -163,6 +163,7 @@ class KlipperScreen(Gtk.Window):
 
         self.initial_connection()
 
+        subprocess.run(["/bin/bash", "/home/mks/KlipperScreen/all/auto_timezone.sh"]) # Timezone
         subprocess.run(["/home/mks/KlipperScreen/all/lcd_180.sh", ""])  # luojin
         subprocess.Popen(["python3", "/home/mks/mainsail/all/qr.py"])  # luojin
         result = subprocess.run(['hostname', '-I'], stdout=subprocess.PIPE)

@@ -25,6 +25,9 @@ msgstr "%s 将被更新为版本"
 msgid "(default)"
 msgstr "(默认)"
 
+msgid "ReloadUI"
+msgstr "重启UI"
+
 msgid "24 Hour Time"
 msgstr "使用24小时制"
 

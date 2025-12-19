@@ -226,7 +226,7 @@ class Panel(ScreenPanel):
             if response_msg:
                 self.add_gcode("response", time.time(), response_msg)
 
-            old_cfgs = ["EECAN.cfg", "EECAN1.cfg", "EECAN2.cfg","EECAN1_350.cfg", "EECAN1_300.cfg"]
+            old_cfgs = ["EECAN.cfg","EECAN1_350.cfg", "EECAN1_300.cfg"]
 
             for old_cfg in old_cfgs:
                 if old_cfg != target_cfg:
@@ -239,6 +239,22 @@ class Panel(ScreenPanel):
                                          universal_newlines=True  
                                          )
                     self.add_gcode("response", time.time(), out.stdout)
+                    if 'EECAN1' in target_cfg:
+                        new_offset_V1 = "sed -i s/z_offset/z_offset=-0.09#/g /home/mks/printer_data/config/printer.cfg"
+                        out = subprocess.run(new_offset_V1.split(" "),
+                                             stdout=subprocess.PIPE,
+                                             stderr=subprocess.STDOUT,
+                                             universal_newlines=True
+                                             )
+                        self.add_gcode("response", time.time(), out.stdout)
+                    elif 'EECAN.cfg' in target_cfg:
+                        new_offset_V1 = "sed -i s/z_offset/z_offset=-0.12#/g /home/mks/printer_data/config/printer.cfg"
+                        out = subprocess.run(new_offset_V1.split(" "),
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.STDOUT,
+                                         universal_newlines=True
+                                         )
+                        self.add_gcode("response", time.time(), out.stdout)
                 
         elif cmd.find("h") == 0:
             new_cmd = 'cat /home/mks/printer_data/config/printer.cfg'

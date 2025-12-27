@@ -57,9 +57,28 @@ fi
 # Apply fixes immediately
 echo ""
 echo "4. Applying fixes now..."
-sudo ip link set can0 txqueuelen 1024 2>/dev/null || echo "   Note: can0 not available"
-echo -1 | sudo tee /sys/bus/usb/devices/1-1/power/autosuspend > /dev/null 2>&1 || true
-echo on | sudo tee /sys/bus/usb/devices/1-1/power/control > /dev/null 2>&1 || true
+if ip link show can0 > /dev/null 2>&1; then
+    sudo ip link set can0 txqueuelen 1024
+    echo "   ✓ Set can0 txqueuelen to 1024"
+else
+    echo "   Note: can0 interface not available; skipping immediate txqueuelen update"
+fi
+
+# Find and configure USB power settings dynamically
+USB_POWER_PATH=""
+if [ -d "/sys/class/net/can0/device" ]; then
+    # Traverse up from can0 to find the USB device power control
+    USB_POWER_PATH=$(readlink -f /sys/class/net/can0/device/../../power 2>/dev/null)
+fi
+
+if [ -n "$USB_POWER_PATH" ] && [ -d "$USB_POWER_PATH" ]; then
+    echo -1 | sudo tee "$USB_POWER_PATH/autosuspend" > /dev/null 2>&1 && \
+        echo "   ✓ Disabled USB autosuspend for CAN adapter"
+    echo on | sudo tee "$USB_POWER_PATH/control" > /dev/null 2>&1 && \
+        echo "   ✓ Set USB power control to 'on' for CAN adapter"
+else
+    echo "   Note: USB CAN adapter power path not found; skipping USB power configuration"
+fi
 echo "   ✓ Applied immediate fixes"
 
 # Verify
@@ -69,7 +88,13 @@ echo "Verification"
 echo "=============================================="
 
 CURRENT_TXQUEUELEN=$(cat /sys/class/net/can0/tx_queue_len 2>/dev/null || echo "N/A")
-CURRENT_AUTOSUSPEND=$(cat /sys/bus/usb/devices/1-1/power/autosuspend 2>/dev/null || echo "N/A")
+
+# Dynamically find USB autosuspend value
+if [ -n "$USB_POWER_PATH" ] && [ -f "$USB_POWER_PATH/autosuspend" ]; then
+    CURRENT_AUTOSUSPEND=$(cat "$USB_POWER_PATH/autosuspend" 2>/dev/null || echo "N/A")
+else
+    CURRENT_AUTOSUSPEND="N/A (device path not found)"
+fi
 
 echo "CAN txqueuelen:    $CURRENT_TXQUEUELEN (should be 1024)"
 echo "USB autosuspend:   $CURRENT_AUTOSUSPEND (should be -1)"
@@ -98,5 +123,6 @@ echo "- can0 interface is created"
 echo ""
 echo "To verify after reboot:"
 echo "  cat /sys/class/net/can0/tx_queue_len"
-echo "  cat /sys/bus/usb/devices/1-1/power/autosuspend"
+echo "  # Find USB power path dynamically:"
+echo "  readlink -f /sys/class/net/can0/device/../../power/autosuspend"
 echo "=============================================="

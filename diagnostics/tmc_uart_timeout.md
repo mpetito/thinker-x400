@@ -27,7 +27,7 @@ A second long-duration print failed with a TMC UART timeout error. Analysis reve
 The fix from git commit `91221a6` ("increase the can buffer") IS present in `/etc/rc.local`:
 
 ```bash
-echo makerbase | sudo -S ifconfig can0 txqueuelen 1024
+echo makerbase | sudo -S ip link set can0 txqueuelen 1024
 ```
 
 **However, the fix is lost when the USB CAN adapter reconnects.**
@@ -55,7 +55,7 @@ When the USB device reconnects:
 3. The rc.local fix (which ran at boot) is **NOT reapplied**
 4. CAN bus saturates under load → TMC UART timeout
 
-**USB autosuspend** (`autosuspend=2`) may be contributing to these disconnects by suspending the adapter during print idle moments.
+**USB autosuspend** (`autosuspend=2`) may be contributing to these disconnects by suspending the adapter during short idle periods between print moves (for example, between G-code moves, travel moves, or retractions).
 
 ### 1.2 Why txqueuelen Matters
 
@@ -104,7 +104,7 @@ This indicates the crash was so sudden that:
 **Memory was dropping rapidly** in the last few seconds:
 
 - 201,616 KB → 193,580 KB → 185,120 KB → 180,968 KB → 180,748 KB
-- This is ~5 MB/second memory consumption - indicative of CAN queue backup
+- This is ~5 MB/s memory consumption - indicative of CAN queue backup
 
 ---
 
@@ -176,7 +176,14 @@ cat /sys/class/net/can0/tx_queue_len
 
 systemctl status can-txqueuelen.service
 # Should show: active (exited)
+
+# Check USB autosuspend (path is system-specific, use this to find it):
+cat $(readlink -f /sys/class/net/can0/device/../../power/autosuspend)
+# Should show: -1
 ```
+
+> **Note:** The USB device path (e.g., `1-1`, `1-2`, etc.) varies by system and USB port.
+> Use the dynamic path detection shown above instead of hardcoding a specific path.
 
 ---
 
@@ -224,7 +231,7 @@ canbus_uuid: <your_uuid>
 
 The December 27 failure was caused by **insufficient CAN bus queue depth** (`txqueuelen=128` instead of `1024`). The fix was identified in commit `91221a6` but wasn't persisting across reboots.
 
-A systemd service has been created to ensure the fix is applied on every boot, before Klipper starts. This should prevent future TMC UART timeout errors during long prints.
+Udev rules have been added as the primary mechanism to ensure the txqueuelen fix is applied both at boot and on USB reconnects, with a systemd service in place as a boot-time backup before Klipper starts. This should prevent future TMC UART timeout errors during long prints.
 
 The December 20 "verify_heater" failure may have also been caused by CAN bus issues affecting heater temperature readings, though this cannot be confirmed without additional data.
 

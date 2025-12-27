@@ -34,7 +34,7 @@ class KlippyGcodes:
 
     @staticmethod
     def set_heater_temp(heater, temp):
-        return f'SET_HEATER_TEMPERATURE heater="{heater}" target={temp}  \n SET_PIN PIN=Board_FAN VALUE=0.8'
+        return f'SET_HEATER_TEMPERATURE heater="{heater}" target={temp}'
 
     @staticmethod
     def set_temp_fan_temp(temp_fan, temp):

@@ -46,9 +46,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Use seconds and random suffix to avoid branch name collisions
-          TIMESTAMP=$(date +%Y%m%d-%H%M%S)-$RANDOM
-          BRANCH_NAME="maintenance/sync-upstream-$TIMESTAMP"
+          # Use workflow run ID for guaranteed unique branch names
+          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+          BRANCH_NAME="maintenance/sync-upstream-$TIMESTAMP-${{ github.run_id }}"
 
           # Fetch latest origin/master for accurate comparison
           git fetch origin master
@@ -87,20 +87,26 @@ jobs:
             
           else
             echo "::error::Merge conflicts detected."
+            
+            # Capture conflicting files before aborting
+            CONFLICT_FILES=$(git diff --name-only --diff-filter=U 2>/dev/null || echo "Unable to determine conflicting files")
             git merge --abort
+            
+            # Build documentation link
+            CONTRIBUTING_URL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/master/CONTRIBUTING.md#workflow-2-syncing-with-manufacturer-upstream"
             
             # Check for existing open conflict issue to avoid duplicates
             EXISTING_ISSUE=$(gh issue list --search "Upstream Sync Conflict in:title" --state open --json number --jq '.[0].number' 2>/dev/null || echo "")
             
             if [ -n "$EXISTING_ISSUE" ]; then
               echo "::warning::Conflict issue #$EXISTING_ISSUE already exists. Adding comment."
-              gh issue comment "$EXISTING_ISSUE" --body "Sync still failing as of $TIMESTAMP" || true
+              gh issue comment "$EXISTING_ISSUE" --body "Sync still failing as of $TIMESTAMP. Conflicting files: $CONFLICT_FILES" || true
             else
               echo "Creating Issue to notify user..."
 
               if ! gh issue create \
                 --title "Action Required: Upstream Sync Conflict ($TIMESTAMP)" \
-                --body "The automated upstream sync failed due to merge conflicts. Please perform a manual sync using the workflow described in CONTRIBUTING.md."; then
+                --body "The automated upstream sync failed due to merge conflicts. Conflicting files: $CONFLICT_FILES. Please perform a manual sync using the [workflow in CONTRIBUTING.md]($CONTRIBUTING_URL)."; then
                 echo "::error::CRITICAL: Merge conflicts exist AND issue creation failed. Manual sync required."
               fi
             fi

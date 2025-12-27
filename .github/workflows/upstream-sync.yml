@@ -1,0 +1,115 @@
+name: Sync Upstream
+
+on:
+  schedule:
+    - cron: "0 0 * * 1" # Runs every Monday at 00:00 UTC
+  workflow_dispatch: # Allows you to run this manually from the Actions tab
+
+# Prevent concurrent syncs from conflicting
+concurrency:
+  group: upstream-sync
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  sync-upstream:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: master
+
+      - name: Configure Git Identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add Upstream Remote
+        run: |
+          # The manufacturer's repository URL
+          # Remove existing remote if present (handles re-runs)
+          git remote remove upstream 2>/dev/null || true
+          git remote add upstream https://gitcode.com/xpp012/KlipperScreen.git
+
+          if ! git fetch upstream master; then
+            echo "::error::Failed to fetch from upstream. The upstream server may be unavailable."
+            exit 1
+          fi
+
+      - name: Sync and Create PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Use workflow run ID for guaranteed unique branch names
+          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+          BRANCH_NAME="maintenance/sync-upstream-$TIMESTAMP-${{ github.run_id }}"
+
+          # Fetch latest origin/master for accurate comparison
+          git fetch origin master
+
+          # Check if upstream has any new commits before attempting merge
+          MERGE_BASE=$(git merge-base HEAD upstream/master)
+          UPSTREAM_HEAD=$(git rev-parse upstream/master)
+
+          if [ "$MERGE_BASE" = "$UPSTREAM_HEAD" ]; then
+            echo "::notice::No new changes from upstream found."
+            exit 0
+          fi
+
+          echo "Creating sync branch: $BRANCH_NAME"
+          git checkout -b "$BRANCH_NAME"
+
+          # Attempt to merge upstream/master
+          # --no-edit accepts the default merge message
+          if git merge upstream/master --no-edit; then
+            echo "Merge successful. Pushing branch..."
+            
+            if ! git push origin "$BRANCH_NAME"; then
+              echo "::error::Failed to push branch. Check repository permissions."
+              exit 1
+            fi
+            
+            echo "Creating Pull Request..."
+            
+            if ! gh pr create \
+              --title "chore: sync with upstream ($TIMESTAMP)" \
+              --body "Review Required: This PR contains code from an external upstream repository. Please review all file changes (especially configs) carefully before merging." \
+              --base master \
+              --head "$BRANCH_NAME"; then
+              echo "::warning::PR creation failed. Branch '$BRANCH_NAME' was pushed - create PR manually."
+            fi
+            
+          else
+            echo "::error::Merge conflicts detected."
+            
+            # Capture conflicting files before aborting
+            CONFLICT_FILES=$(git diff --name-only --diff-filter=U 2>/dev/null || echo "Unable to determine conflicting files")
+            git merge --abort
+            
+            # Build documentation link
+            CONTRIBUTING_URL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/master/CONTRIBUTING.md#workflow-2-syncing-with-manufacturer-upstream"
+            
+            # Check for existing open conflict issue to avoid duplicates
+            EXISTING_ISSUE=$(gh issue list --search "Upstream Sync Conflict in:title" --state open --json number --jq '.[0].number' 2>/dev/null || echo "")
+            
+            if [ -n "$EXISTING_ISSUE" ]; then
+              echo "::warning::Conflict issue #$EXISTING_ISSUE already exists. Adding comment."
+              gh issue comment "$EXISTING_ISSUE" --body "Sync still failing as of $TIMESTAMP. Conflicting files: $CONFLICT_FILES" || true
+            else
+              echo "Creating Issue to notify user..."
+
+              if ! gh issue create \
+                --title "Action Required: Upstream Sync Conflict ($TIMESTAMP)" \
+                --body "The automated upstream sync failed due to merge conflicts. Conflicting files: $CONFLICT_FILES. Please perform a manual sync using the [workflow in CONTRIBUTING.md]($CONTRIBUTING_URL)."; then
+                echo "::error::CRITICAL: Merge conflicts exist AND issue creation failed. Manual sync required."
+              fi
+            fi
+            
+            exit 1
+          fi

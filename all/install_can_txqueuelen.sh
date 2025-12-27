@@ -39,6 +39,7 @@ echo ""
 echo "2. Reloading udev rules..."
 sudo udevadm control --reload-rules
 sudo udevadm trigger
+udevadm settle --timeout=5  # Wait for udev events to finish processing
 echo "   ✓ Udev rules reloaded"
 
 # Install systemd service as backup
@@ -48,8 +49,14 @@ if [ -f "$SCRIPT_DIR/can-txqueuelen.service" ]; then
     sudo cp "$SCRIPT_DIR/can-txqueuelen.service" /etc/systemd/system/
     sudo systemctl daemon-reload
     sudo systemctl enable can-txqueuelen.service
-    sudo systemctl start can-txqueuelen.service 2>/dev/null || true
     echo "   ✓ Installed and enabled can-txqueuelen.service"
+    if sudo systemctl start can-txqueuelen.service; then
+        echo "   ✓ Started can-txqueuelen.service"
+    else
+        echo "   ⚠ Warning: Failed to start can-txqueuelen.service"
+        echo "     You can check the service status with:"
+        echo "       sudo systemctl status can-txqueuelen.service"
+    fi
 else
     echo "   ⚠ Warning: can-txqueuelen.service not found"
 fi
@@ -79,7 +86,6 @@ if [ -n "$USB_POWER_PATH" ] && [ -d "$USB_POWER_PATH" ]; then
 else
     echo "   Note: USB CAN adapter power path not found; skipping USB power configuration"
 fi
-echo "   ✓ Applied immediate fixes"
 
 # Verify
 echo ""

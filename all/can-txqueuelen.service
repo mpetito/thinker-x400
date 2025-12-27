@@ -3,16 +3,17 @@ Description=Set CAN bus txqueuelen for Klipper stability
 Documentation=https://github.com/Klipper3d/klipper/issues
 After=network-pre.target systemd-modules-load.service sys-subsystem-net-devices-can0.device
 Before=klipper.service moonraker.service
-Wants=network-pre.target sys-subsystem-net-devices-can0.device
+Wants=network-pre.target
+Requires=sys-subsystem-net-devices-can0.device
+BindsTo=sys-subsystem-net-devices-can0.device
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
 TimeoutStartSec=30
 
-# Wait for can0 interface to exist, then set txqueuelen
+# Systemd waits for can0 via the device dependency; then set txqueuelen
 # The higher txqueuelen prevents CAN queue saturation during long prints
-ExecStartPre=/bin/bash -c 'for i in $(seq 1 30); do if [ -d /sys/class/net/can0 ]; then exit 0; fi; sleep 0.5; done; exit 1'
 ExecStart=/sbin/ip link set can0 txqueuelen 1024
 
 # Log success for debugging

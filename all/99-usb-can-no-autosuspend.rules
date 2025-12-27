@@ -7,11 +7,6 @@
 # The gs_usb driver (USB CAN adapter) can disconnect if USB autosuspend kicks in,
 # causing "Couldn't shutdown device (err=-19)" errors and Klipper communication failures.
 
-# Match USB CAN adapters using gs_usb driver
-# Note: DRIVERS (plural) matches anywhere in the driver hierarchy, which is required
-# since the gs_usb driver binds to the interface, not the device itself
-ACTION=="add", SUBSYSTEM=="usb", DRIVERS=="gs_usb", ATTR{power/autosuspend}="-1", ATTR{power/control}="on"
-
-# Alternative: Match by interface (can0) - dynamically finds the USB device path
+# Match by interface (can0) - dynamically finds the USB device path
 # This traverses DEVPATH to locate the power control files for the parent USB device
-ACTION=="add", SUBSYSTEM=="net", KERNEL=="can0", RUN+="/bin/sh -c 'dev=/sys/class/net/can0/device/../../power; [ -d \"$dev\" ] && echo on > \"$dev/control\" 2>/dev/null; echo -1 > \"$dev/autosuspend\" 2>/dev/null'"
+ACTION=="add", SUBSYSTEM=="net", KERNEL=="can0", RUN+="/bin/sh -c 'dev=/sys/class/net/can0/device/../../power; if [ -d \"$dev\" ]; then if ! echo on > \"$dev/control\" 2>/dev/null; then logger -t usb-can-no-autosuspend \"Failed to set power/control to on for $dev\"; fi; if ! echo -1 > \"$dev/autosuspend\" 2>/dev/null; then logger -t usb-can-no-autosuspend \"Failed to set power/autosuspend to -1 for $dev\"; fi; fi'"

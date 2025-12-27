@@ -1,0 +1,14 @@
+# Udev rule to disable USB autosuspend for the CAN adapter (gs_usb)
+# This prevents the adapter from being suspended during print idle moments
+#
+# Install: sudo cp 99-usb-can-no-autosuspend.rules /etc/udev/rules.d/
+# Reload: sudo udevadm control --reload-rules
+#
+# The gs_usb driver (USB CAN adapter) can disconnect if USB autosuspend kicks in,
+# causing "Couldn't shutdown device (err=-19)" errors and Klipper communication failures.
+
+# Match USB CAN adapters using gs_usb driver
+ACTION=="add", SUBSYSTEM=="usb", DRIVER=="gs_usb", ATTR{power/autosuspend}="-1", ATTR{power/control}="on"
+
+# Alternative: Match by interface (can0)
+ACTION=="add", SUBSYSTEM=="net", KERNEL=="can0", RUN+="/bin/sh -c 'echo -1 > /sys/bus/usb/devices/1-1/power/autosuspend; echo on > /sys/bus/usb/devices/1-1/power/control'"

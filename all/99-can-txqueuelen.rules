@@ -1,0 +1,10 @@
+# Udev rule to set CAN bus txqueuelen whenever can0 is created
+# This handles both boot AND USB reconnects
+#
+# Install: sudo cp 99-can-txqueuelen.rules /etc/udev/rules.d/
+# Reload: sudo udevadm control --reload-rules
+#
+# The txqueuelen must be 1024 to prevent "Timeout on wait for 'tmcuart_response'"
+# errors during long prints with heavy CAN bus traffic.
+
+ACTION=="add", SUBSYSTEM=="net", KERNEL=="can0", RUN+="/sbin/ip link set can0 txqueuelen 1024"

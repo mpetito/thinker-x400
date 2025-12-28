@@ -7,4 +7,9 @@
 # The txqueuelen must be 1024 to prevent "Timeout on wait for 'tmcuart_response'"
 # errors during long prints with heavy CAN bus traffic.
 
-ACTION=="add", SUBSYSTEM=="net", KERNEL=="can0", ATTR{tx_queue_len}="1024"
+# Use RUN+= because ATTR{tx_queue_len} is read-only for network interfaces
+# The ip command is more reliable than writing to sysfs directly
+ACTION=="add", SUBSYSTEM=="net", KERNEL=="can0", RUN+="/sbin/ip link set can0 txqueuelen 1024"
+
+# Alternative: Also trigger on "change" events in case the interface is modified
+ACTION=="change", SUBSYSTEM=="net", KERNEL=="can0", RUN+="/sbin/ip link set can0 txqueuelen 1024"

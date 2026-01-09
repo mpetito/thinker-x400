@@ -226,7 +226,7 @@ class Panel(ScreenPanel):
             if response_msg:
                 self.add_gcode("response", time.time(), response_msg)
 
-            old_cfgs = ["EECAN.cfg","EECAN1_350.cfg", "EECAN1_300.cfg"]
+            old_cfgs = ["EECAN.cfg","EECAN1.cfg","EECAN1_350.cfg", "EECAN1_300.cfg"]
 
             for old_cfg in old_cfgs:
                 if old_cfg != target_cfg:

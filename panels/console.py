@@ -265,13 +265,49 @@ class Panel(ScreenPanel):
                                  )
             self.add_gcode("response", time.time(), out.stdout[0:220])
 
+        elif cmd.find("f") == 0:
+
+            if '175' in cmd:
+                new_offset_V1 = r"sed -i 's/^\(\s*rotation_distance:\s*\).*/\112.4358/' /home/mks/printer_data/config/printer.cfg"
+                out = subprocess.run(new_offset_V1,
+                                        shell=True,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.STDOUT,
+                                        text=True
+                                        )
+                self.add_gcode("response", time.time(), out.stdout)
+                new_offset_V1 = r"sed -i 's/^\(\s*filament_diameter:\s*\).*/\11.75/' /home/mks/printer_data/config/printer.cfg"
+                out = subprocess.run(new_offset_V1,
+                                        shell=True,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.STDOUT,
+                                        text=True
+                                        )
+                self.add_gcode("response", time.time(), out.stdout + '\n Please restart the klipper\n')
+            if '285' in cmd:
+                new_offset_V1 = r"sed -i 's/^\(\s*rotation_distance:\s*\).*/\130.982787/' /home/mks/printer_data/config/printer.cfg"
+                out = subprocess.run(new_offset_V1,
+                                        shell=True,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.STDOUT,
+                                        text=True
+                                        )
+                self.add_gcode("response", time.time(), out.stdout) 
+                new_offset_V1 = r"sed -i 's/^\(\s*filament_diameter:\s*\).*/\12.85/' /home/mks/printer_data/config/printer.cfg"
+                out = subprocess.run(new_offset_V1,
+                                        shell=True,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.STDOUT,
+                                        text=True
+                                        )
+                self.add_gcode("response", time.time(), out.stdout + '\n  Please restart the klipper\n')    
         elif cmd.find("F") == 0:
             out = subprocess.run(['/home/mks/KlipperScreen/all/flash.sh', cmd],
               stdout = subprocess.PIPE,
               stderr = subprocess.STDOUT,
               universal_newlines = True # Python >= 3.7 also accepts "text=True"
               )
-            self.add_gcode("response", time.time(), out.stdout)
+            self.add_gcode("response", time.time(), out.stdout)    
             #self.add_gcode("response", time.time(), out.decode("utf-8"))
         elif cmd.find("P") == 0:
             out = subprocess.run(['/home/mks/KlipperScreen/all/git_pull.sh', cmd],

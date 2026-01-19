@@ -71,6 +71,135 @@ class Panel(ScreenPanel):
         screen_layout_box.pack_start(main_box, False, False, 0)
         self.content.add(screen_layout_box)
 
+        #============================================
+
+        # Create a horizontal box for button 
+        button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=20)
+        button_box.set_margin_start(20)    
+        button_box.set_margin_end(20)      
+        button_box.set_margin_bottom(20)   
+        button_box.set_halign(Gtk.Align.CENTER)  
+
+        #  Create reset button
+        self.reset_button = Gtk.Button.new_with_label(_("Reset All Statistics"))
+        # Set minimum button width
+        self.reset_button.set_size_request(200, 50)
+        # Connect click event to handler
+        self.reset_button.connect("clicked", self._perform_reset)
+
+        # Add CSS style (red warning button)
+        css_provider = Gtk.CssProvider()
+        # Set red background, white text
+        css_provider.load_from_data(b"""
+            .warning-button {
+                background-color: #f44336;
+                color: white;
+                font-weight: bold;
+                border-radius: 5px;
+                padding: 10px 20px;
+            }
+            .warning-button:hover {
+                background-color: #d32f2f;
+            }
+        """)
+        style_context = self.reset_button.get_style_context()
+        style_context.add_provider(css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
+        style_context.add_class("warning-button")
+        
+        # Add button to button box
+        button_box.pack_start(self.reset_button, False, False, 0)
+        
+        # Add button box to main layout
+        screen_layout_box.pack_start(button_box, False, False, 0)
+        
+        self.reset_api_url = "http://127.0.0.1:7125/server/history/reset_totals"  
+        self.delete_all_api_url  = "http://127.0.0.1:7125/server/history/job?all=true"
+            
+    def _perform_reset(self,button = None):
+
+        # Disable button to prevent repeated clicks
+        self.reset_button.set_sensitive(False)
+        self.reset_button.set_label(_("Resetting..."))
+        
+        # how message in status bar
+        self._screen.show_popup_message(_("Resetting statistics..."), level=1)
+        
+        # Start background thread to perform reset
+        thread = threading.Thread(target=self._reset_data_thread, daemon=True)
+        thread.start()
+        
+    def _reset_data_thread(self):
+        try:
+            # Send request to reset API
+            response = requests.post(self.reset_api_url, timeout=10)
+            response.raise_for_status()  
+
+            response = requests.delete(self.delete_all_api_url, timeout=10)
+            response.raise_for_status()
+            
+            # Parse response
+            result = response.json()
+            
+            if 'result' in result:
+                GLib.idle_add(self._on_reset_success)
+            elif 'error' in result:
+                error_msg = result['error']
+                if 'empty' in error_msg.lower():
+                    GLib.idle_add(self._on_reset_already_empty)
+                else:
+                    GLib.idle_add(self._on_reset_error, error_msg)
+            else:
+                GLib.idle_add(self._on_reset_success) 
+            
+                
+        except requests.exceptions.ConnectionError:
+            error_msg = "Cannot connect to Moonraker"
+            GLib.idle_add(self._on_reset_error, error_msg)
+            
+        except requests.exceptions.Timeout:
+            error_msg = "Request timeout"
+            GLib.idle_add(self._on_reset_error, error_msg)
+            
+        except requests.exceptions.RequestException as e:
+            GLib.idle_add(self._on_reset_error, str(e))
+            
+        except (KeyError, json.JSONDecodeError) as e:
+            error_msg = f"Invalid response: {e}"
+            GLib.idle_add(self._on_reset_error, error_msg)
+            
+    def _on_reset_success(self):
+
+        # Restore button state
+        self.reset_button.set_sensitive(True)
+        self.reset_button.set_label(_("Reset All Statistics"))
+        
+        # Show success message
+        self._screen.show_popup_message(_("Statistics reset successfully!"), level=1)
+        
+        
+
+        # Refresh statistics display
+        self.update_stats() 
+        
+        return False
+        
+    def _on_reset_error(self, error_msg):
+
+        # Restore button state
+        self.reset_button.set_sensitive(True)
+        self.reset_button.set_label(_("Reset All Statistics"))
+        
+        # Show error message
+        error_text = _("Reset failed: {}").format(error_msg, error_msg)
+        self._screen.show_popup_message(error_text, level=3)
+        
+        # Log error
+        logging.error(f"Statistics reset failed: {error_msg}")
+        
+        return False
+        
+        #============================================
+
     def activate(self):
         self.update_stats()
 

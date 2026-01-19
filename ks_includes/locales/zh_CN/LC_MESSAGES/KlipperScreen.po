@@ -869,6 +869,21 @@ msgstr "mm/s²"
 msgid "mm³/s"
 msgstr "mm³/s"
 
+msgid "Reset All Statistics"
+msgstr "重置所有数据"
+
+msgid "Resetting..."
+msgstr "重置中..."
+
+msgid "Resetting statistics..."
+msgstr "重置数据中..."
+
+msgid "Statistics reset successfully!"
+msgstr "数据重置成功！"
+
+msgid "Reset failed"
+msgstr "重置失败"
+
 #~ msgid "Actions"
 #~ msgstr "控制"
 

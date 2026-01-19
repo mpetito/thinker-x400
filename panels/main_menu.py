@@ -166,40 +166,48 @@ class Panel(MenuPanel):
             file.close()
         except Exception as e:
             pass
+
         #logging.debug(f"filename==0...")
         # power losse recover
-        config = configparser.ConfigParser()
-        config.read('/home/mks/printer_data/config/variable.cfg')
-        logging.debug(f"All sections:{config['Variables']}")
+        try:
+            config = configparser.ConfigParser()
+            config.read('/home/mks/printer_data/config/variable.cfg')
+            logging.debug(f"All sections:{config['Variables']}")
 
-        if 'Variables' in config:
-            power_resume_z = config.get('Variables', 'power_resume_z', fallback=None)
-            if power_resume_z is not None:
-                power_resume_z = config['Variables']['power_resume_z']
-              #  self.resume_z = power_resume_z
-               # self.labels['entry'].set_text(f"{power_resume_z}")
-                logging.debug(f"power_resume_z:{power_resume_z}")
+            if 'Variables' in config:
+                power_resume_z = config.get('Variables', 'power_resume_z', fallback=None)
+                if power_resume_z is not None:
+                    power_resume_z = config['Variables']['power_resume_z']
+                #  self.resume_z = power_resume_z
+                # self.labels['entry'].set_text(f"{power_resume_z}")
+                    logging.debug(f"power_resume_z:{power_resume_z}")
 
-            filename = config.get('Variables', 'filename', fallback=None)
-            if filename is not None:
-                if '.gcode' in filename:
-                    label = Gtk.Label(
-                        "Resume Print ? \n\nFile: %s  \n\n Height: %s mm" % (filename, power_resume_z))
-                    buttons = [
-                        {"name": _("Print"), "response": Gtk.ResponseType.OK},
-                        {"name": _("Cancel"), "response": Gtk.ResponseType.CANCEL}
-                    ]
-                    scroll = self._gtk.ScrolledWindow()
-                    scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-                    vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-                    vbox.set_halign(Gtk.Align.CENTER)
-                    vbox.set_valign(Gtk.Align.CENTER)
-                    vbox.add(label)
-                    scroll.add(vbox)
-                    self.dialog_wait = self._gtk.Dialog(self._screen, buttons, scroll, self.wait_confirm, "title")
-                    self.dialog_wait.set_title(_("Update"))
+                filename = config.get('Variables', 'filename', fallback=None)
+                if filename is not None:
+                    if '.gcode' in filename:
+                        label = Gtk.Label(
+                            "Resume Print ? \n\nFile: %s  \n\n Height: %s mm" % (filename, power_resume_z))
+                        buttons = [
+                            {"name": _("Print"), "response": Gtk.ResponseType.OK},
+                            {"name": _("Cancel"), "response": Gtk.ResponseType.CANCEL}
+                        ]
+                        scroll = self._gtk.ScrolledWindow()
+                        scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+                        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+                        vbox.set_halign(Gtk.Align.CENTER)
+                        vbox.set_valign(Gtk.Align.CENTER)
+                        vbox.add(label)
+                        scroll.add(vbox)
+                        self.dialog_wait = self._gtk.Dialog(self._screen, buttons, scroll, self.wait_confirm, "title")
+                        self.dialog_wait.set_title(_("Update"))
+            else:
+                logging.debug("No [Variables] section found in variable.cfg, skipping power loss recovery")
 
-
+        except Exception as e:
+            # 捕获所有异常并记录，然后继续运行
+            logging.warning(f"Error during power loss recovery check: {e}")
+            logging.warning("Skipping power loss recovery and continuing...")
+            # 这里不重新抛出异常，让程序继续运行
 
 
 

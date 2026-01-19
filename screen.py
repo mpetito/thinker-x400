@@ -115,6 +115,7 @@ class KlipperScreen(Gtk.Window):
         self.show_title_IP = ""
         configfile = os.path.normpath(os.path.expanduser(args.configfile))
 
+
         self._config = KlipperScreenConfig(configfile, self)
         self.lang_ltr = set_text_direction(self._config.get_main_config().get("language", None))
         self.env = Environment(extensions=["jinja2.ext.i18n"], autoescape=True)
@@ -176,6 +177,80 @@ class KlipperScreen(Gtk.Window):
         if '192.' not in str(ip):
             logging.debug("reset to 169")
             subprocess.Popen(["/home/mks/KlipperScreen/all/run_cmd.sh", "/sbin/ifconfig eth0 169.254.237.208"])
+
+    # ====================
+
+        self.temp_file_path = '/sys/class/thermal/thermal_zone0/temp'  
+        self.fan_pin = "Board_FAN"      
+        self.fan_threshold_1 = 60.0 
+        self.fan_threshold_2 = 70.0           
+        self.fan_speed_1 = 0.4
+        self.fan_speed_2 = 0.8            
+        self.fan_hysteresis = 5.0       
+        self.temp_check_interval = 15    
+        self.current_fan_state = "off"  
+
+        GLib.timeout_add_seconds(self.temp_check_interval, self._check_and_control_fan_loop)
+        logging.info("Fan temp control is inited")
+
+    def _check_and_control_fan_loop(self):
+        try:
+            if os.path.exists(self.temp_file_path):
+                with open(self.temp_file_path, 'r') as f:
+                    millidegrees = int(f.read().strip())  
+                    current_temp = millidegrees / 1000.0  
+                
+                logging.debug(f"CPU Temp: {current_temp:.1f}C")
+            
+                self._control_fan_based_on_temp(current_temp)
+        except Exception as e:
+            logging.error(f"error: {e}")
+        return True
+    
+    def _control_fan_based_on_temp(self, temperature):
+        try:
+            new_state = self.current_fan_state  
+        
+            if self.current_fan_state == "off":
+                if temperature >= self.fan_threshold_1:  # >=60
+                    new_state = "low"
+            elif self.current_fan_state == "low":
+                if temperature <= (self.fan_threshold_1 - self.fan_hysteresis):  # <=55
+                    new_state = "off"
+                elif temperature >= self.fan_threshold_2:  # >=70
+                    new_state = "high"
+            elif self.current_fan_state == "high":
+                if temperature <= (self.fan_threshold_2 - self.fan_hysteresis):  # <=65
+                    new_state = "low"
+            
+            if new_state != self.current_fan_state:
+                if new_state == "off":
+                    gcode_cmd = f"SET_PIN PIN={self.fan_pin} VALUE=0.0"
+                    logging.info(f"temp {temperature:.1f}C close fan")
+                elif new_state == "low":
+                    gcode_cmd = f"SET_PIN PIN={self.fan_pin} VALUE={self.fan_speed_1}"
+                    logging.info(f"temp {temperature:.1f}C low fan (40%)")
+                elif new_state == "high":
+                    gcode_cmd = f"SET_PIN PIN={self.fan_pin} VALUE={self.fan_speed_2}"
+                    logging.info(f"temp {temperature:.1f}C high fan (80%)")
+                
+                self._send_gcode_command(gcode_cmd)
+                self.current_fan_state = new_state 
+                
+        except Exception as e:
+            logging.error(f"Fan control control error: {e}")
+
+    def _send_gcode_command(self, gcode):
+        if hasattr(self, '_ws') and self._ws.connected:
+            try:
+                self._ws.send_method("printer.gcode.script", {"script": gcode})
+                logging.debug(f"gcode sent: {gcode}")
+            except Exception as e:
+                logging.error(f"send fail: {e}")
+        else:
+            logging.warning("cant send gcode")
+
+    # ====================
 
     def pused_state(self):
         logging.debug(f"pused_state.........")

@@ -147,7 +147,7 @@ class Panel(MenuPanel):
                     self.dialog_wait.set_title(_("Update"))
                     return
                 elif 'needreboot = 1' in line:
-                    label = Gtk.Label("The upgrade is complete, Do you want to reboot the printer now?")
+                    label = Gtk.Label(_("The upgrade is complete, Do you want to reboot the printer now?"))
                     buttons = [
                         {"name": _("Reboot"), "response": Gtk.ResponseType.OK},
                         {"name": _("Later"), "response": Gtk.ResponseType.CANCEL}
@@ -169,6 +169,7 @@ class Panel(MenuPanel):
 
         #logging.debug(f"filename==0...")
         # power losse recover
+        
         try:
             config = configparser.ConfigParser()
             config.read('/home/mks/printer_data/config/variable.cfg')
@@ -239,11 +240,12 @@ class Panel(MenuPanel):
                 image = f"extruder-{device[8:]}" if device[8:] else "extruder-0"
             else:
                 image = "extruder"
+            devname = _("Extruder")
             class_name = f"graph_label_{device}"
             dev_type = "extruder"
         elif device == "heater_bed":
             image = "bed"
-            devname = "Heater Bed"
+            devname = _("Heater Bed")
             class_name = "graph_label_heater_bed"
             dev_type = "bed"
         elif device.startswith("heater_generic"):

@@ -9,6 +9,7 @@
 
 #sed -i 's/ERYONE_THR/EECAN/g' /home/mks/printer_data/config/canuid.cfg 
 #sed -i 's/hold_current: 0.5/hold_current: 0.6/g' /home/mks/printer_data/config/printer.cfg 
+echo makerbase | sudo -S sed -i 's/txqueuelen 128/txqueuelen 1024/g' /etc/network/interfaces.d/can
 echo makerbase | sudo -S sed -i 's/txqueuelen 128/txqueuelen 1024/g' /etc/network/interfaces.d/can0
 
 sed   -i '/^.*x400.cfg.*$/,/^.*SAVE_CONFIG.*$/{/^.*x400.cfg.*$/!{/^.*SAVE_CONFIG.*$/!d}}'  /home/mks/printer_data/config/printer.cfg 

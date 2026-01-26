@@ -22,6 +22,42 @@ msgstr ""
 msgid "%s will be updated to version"
 msgstr "%s 将被更新为版本"
 
+msgid  "The upgrade is complete, Do you want to reboot the printer now?"
+msgstr "升级已经完成，您想现在重启打印机吗？"
+
+msgid  "Reboot"
+msgstr "重启"
+
+msgid  "Later"
+msgstr "稍后"
+
+msgid  "Perform a full upgrade? this update may take about 5 to 10 minutes"
+msgstr "执行完整升级？此更新可能需要约5到10分钟"
+
+msgid  "Recovery to factoring setting? this update may take about 1 minutes"
+msgstr "恢复至出厂设置？此更新可能需要约1分钟"
+
+msgid  "Reloading the UI? This might take about 1 minutes"
+msgstr "重新加载UI界面？这可能需要大约1分钟"
+
+msgid "Heater Bed"
+msgstr "热床"
+
+msgid "Extruder"
+msgstr "挤出头"
+
+msgid "Recovery"
+msgstr "恢复"
+
+msgid "AI Camera"
+msgstr "AI摄像头"
+
+msgid "Chamber heating"
+msgstr "腔体加热"
+
+msgid "Connect to Cloud"
+msgstr "连接到云端"
+
 msgid "(default)"
 msgstr "(默认)"
 
@@ -868,6 +904,21 @@ msgstr "mm/s²"
 
 msgid "mm³/s"
 msgstr "mm³/s"
+
+msgid "Reset All Statistics"
+msgstr "重置所有数据"
+
+msgid "Resetting..."
+msgstr "重置中..."
+
+msgid "Resetting statistics..."
+msgstr "重置数据中..."
+
+msgid "Statistics reset successfully!"
+msgstr "数据重置成功！"
+
+msgid "Reset failed"
+msgstr "重置失败"
 
 #~ msgid "Actions"
 #~ msgstr "控制"

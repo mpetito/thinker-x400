@@ -9,11 +9,27 @@
 
 #sed -i 's/ERYONE_THR/EECAN/g' /home/mks/printer_data/config/canuid.cfg 
 #sed -i 's/hold_current: 0.5/hold_current: 0.6/g' /home/mks/printer_data/config/printer.cfg 
+echo makerbase | sudo -S sed -i 's/txqueuelen 128/txqueuelen 1024/g' /etc/network/interfaces.d/can
 echo makerbase | sudo -S sed -i 's/txqueuelen 128/txqueuelen 1024/g' /etc/network/interfaces.d/can0
 
 sed   -i '/^.*x400.cfg.*$/,/^.*SAVE_CONFIG.*$/{/^.*x400.cfg.*$/!{/^.*SAVE_CONFIG.*$/!d}}'  /home/mks/printer_data/config/printer.cfg 
 #sed   -i '/^.*x400_p.cfg.*$/,/^.*SAVE_CONFIG.*$/{/^.*x400_p.cfg.*$/!{/^.*SAVE_CONFIG.*$/!d}}'  /home/mks/printer_data/config/printer.cfg 
 #sed  -i '9i [include x400.cfg]' /home/mks/printer_data/config/printer.cfg 
+
+
+CFG="/home/mks/printer_data/config/printer.cfg"
+if ! grep -q 'rotation_distance' "$CFG"; then
+    awk '
+    /x400\.cfg/ && !done {
+        print "[extruder]"
+        print "rotation_distance: 12.4358"
+        print "filament_diameter: 1.75"
+        done=1
+    }
+    { print }
+    ' "$CFG" > "$CFG.tmp" && mv "$CFG.tmp" "$CFG"
+fi
+
 
 sed -i 's/#\[include KAMP_Settings.cfg\]/[include KAMP_Settings.cfg]/g' /home/mks/printer_data/config/printer.cfg
 sed -i 's/ERYONE_EBB36.cfg/ERYONE_36.cfg/g' /home/mks/printer_data/config/printer.cfg
